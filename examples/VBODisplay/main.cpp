@@ -19,6 +19,9 @@ using namespace std;
 const int mesh_width=256;
 const int mesh_height=256;
 
+
+
+
 extern "C" void launch_kernel(float4* pos, unsigned int mesh_width, unsigned int mesh_height, float time);
 extern "C" void launch_kernel_colour(float4* pos, uchar4* color, unsigned int mesh_width, unsigned int mesh_height, float time);
 
