@@ -31,6 +31,7 @@ void timerFunction(int arg){ glutPostRedisplay();}
 
 void routine(){
 
+
     if(HasResized())
         DisplayBase().ActivateScissorAndClear();
 
@@ -38,12 +39,12 @@ void routine(){
     // Specialisations mean no conversions take place for exact types
     // and conversions between scalar types are cheap.
     static Var<bool> a_button("ui.A Button",false,false);
-    static Var<double> a_double("ui.A Double",3,0,5.5);
+    static Var<double> a_double("ui.A Double",3,1,10000,true);
     static Var<int> an_int("ui.An Int",2,0,5);
     static Var<bool> a_checkbox("ui.A Checkbox",false,true);
     static Var<int> an_int_no_input("ui.An Int No Input",2);
     static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
-    static Var<double> aliased_double("ui.Aliased Double",3,0,5.5);
+    static Var<double> aliased_double("ui.Aliased Double",3,0,10000);
 
     if( Pushed(a_button) )
         cout << "You Pushed a button!" << endl;
@@ -76,9 +77,9 @@ void routine(){
     else
         glutTimerFunc(300, timerFunction, 0);
 
-    if(pangolin::ShouldQuit()){
+    if(pangolin::ShouldQuit())
         glutLeaveMainLoop();
-    }
+
 
 }
 
