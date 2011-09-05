@@ -29,6 +29,7 @@
 #define PANGOLIN_DISPLAY_H
 
 #include "platform.h"
+#include <limits.h>
 #include <string>
 #include <map>
 #include <vector>
@@ -96,15 +97,25 @@ namespace pangolin
     void MouseMotion( int x, int y);
   }
 
-#ifdef HAVE_GLUT
+#ifdef HAVE_GLUT  
+
   //! @brief Create GLUT window and bind Pangolin to it.
   //! All GLUT initialisation is taken care of. This prevents you
   //! from needing to call BindToContext() and TakeGlutCallbacks().
-  void CreateGlutWindowAndBind(std::string window_title, int w = 640, int h = 480, unsigned int mode = GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
+  void CreateGlutWindowAndBind(std::string window_title, int w = 640, int h = 480, unsigned int mode = GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
   //! @brief Allow Pangolin to take GLUT callbacks for its own uses
   //! Not needed if you instantiated a window through CreateWindowAndBind().
-  void TakeGlutCallbacks();
+  void TakeGlutCallbacks();  
+
+  typedef void (*userDefinedRoutine)();
+  void pangolinRoutine(userDefinedRoutine);
+  void routineWrapper();
+  void runPangolin(void (*pt2Function)());
+
+  void idleFunction();
+  void timerFunction(int);
+
 #endif
 
   //! @brief Unit for measuring quantities

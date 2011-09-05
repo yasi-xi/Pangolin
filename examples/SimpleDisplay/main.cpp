@@ -27,10 +27,9 @@ OpenGlRenderState s_cam;
 View *d_cam;
 View *d_panel;
 
-void timerFunction(int arg){ glutPostRedisplay();}
+//void timerFunction(int arg){ glutPostRedisplay();}
 
-void routine(){
-
+void myRoutine(){
 
     if(HasResized())
         DisplayBase().ActivateScissorAndClear();
@@ -66,22 +65,13 @@ void routine(){
     glColor3f(1.0,1.0,1.0);
 
     // Render some stuff
-    glutWireTeapot(10.0);
+    glutWireTeapot(10.0);    
 
-    // Render our UI panel when we receive input
-    if(HadInput() || HadMousePress()){
-        d_panel->Render();
-        glutTimerFunc(1, timerFunction, 1);
-        glutSwapBuffers();
-    }
-    else
-        glutTimerFunc(300, timerFunction, 0);
-
-    if(pangolin::ShouldQuit())
-        glutLeaveMainLoop();
-
+    d_panel->Render();
 
 }
+
+
 
 int main( int /*argc*/, char* argv[] )
 {
@@ -111,9 +101,7 @@ int main( int /*argc*/, char* argv[] )
   d_panel = &pangolin::CreatePanel("ui")
       .SetBounds(1.0, 0.0, 0, 200);
 
-  // Default hooks for exiting (Esc) and fullscreen (tab).
-  glutDisplayFunc(routine);
-  glutMainLoop();
+  runPangolin(myRoutine);
 
   return 0;
 }

@@ -288,7 +288,45 @@ namespace pangolin
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
     context->is_double_buffered = mode & GLUT_DOUBLE;
     TakeGlutCallbacks();
+
+
+  }    
+
+  userDefinedRoutine r;
+
+
+  void pangolinRoutine(void (*pt2function)()){
+
+      r = pt2function;
+
+      // Render our UI panel when we receive input
+      if(HadInput() || HadMousePress()){
+          r();
+          glutSwapBuffers();
+      }
+
+      if(pangolin::ShouldQuit())
+          glutLeaveMainLoop();
   }
+
+  void routineWrapper(){ (*pangolinRoutine)(r);}
+
+  void runPangolin(void (*pt2Function)()){
+
+      pangolinRoutine(pt2Function);
+      glutDisplayFunc(routineWrapper);
+      glutTimerFunc(0, timerFunction, 1);
+
+      // Default hooks for exiting (Esc) and fullscreen (tab).
+      glutMainLoop();
+
+  }
+
+  void timerFunction(int arg){
+      glutTimerFunc(10, timerFunction, 1);
+      glutPostRedisplay();
+  }
+
 #endif
 
   void Viewport::Activate() const
