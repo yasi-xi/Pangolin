@@ -25,10 +25,12 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef PANGOLIN_VIDEOSOURCE_H
-#define PANGOLIN_VIDEOSOURCE_H
+#ifndef PANGOLIN_FIREWIRE_H
+#define PANGOLIN_FIREWIRE_H
 
 #include "pangolin.h"
+#include "video.h"
+
 #ifdef HAVE_DC1394
 
 #include <dc1394/dc1394.h>
@@ -39,14 +41,6 @@
 
 namespace pangolin
 {
-
-struct VideoException : std::exception
-{
-  VideoException(std::string str) : desc(str) {}
-  ~VideoException() throw() {}
-  const char* what() const throw() { return desc.c_str(); }
-  std::string desc;
-};
 
 class FirewireFrame
 {
@@ -62,7 +56,13 @@ protected:
   dc1394video_frame_t *frame;
 };
 
-class FirewireVideo
+struct Guid
+{
+    Guid(uint64_t guid):guid(guid){}
+    uint64_t guid;
+};
+
+class FirewireVideo : public VideoInterface
 {
 public:
   FirewireVideo(
@@ -74,7 +74,7 @@ public:
   );
 
   FirewireVideo(
-    uint64_t guid,
+    Guid guid,
     dc1394video_mode_t video_mode = DC1394_VIDEO_MODE_640x480_RGB8,
     dc1394framerate_t framerate = DC1394_FRAMERATE_30,
     dc1394speed_t iso_speed = DC1394_ISO_SPEED_400,
@@ -83,21 +83,25 @@ public:
 
   ~FirewireVideo();
 
-  int Width() const { return width; }
-  int Height() const { return height; }
+  //! Implement VideoSource::Width()
+  unsigned Width() const { return width; }
 
+  //! Implement VideoSource::Height()
+  unsigned Height() const { return height; }
+
+  //! Implement VideoSource::PixFormat()
+  std::string PixFormat() const;
+
+  //! Implement VideoSource::Start()
   void Start();
+
+  //! Implement VideoSource::Stop()
   void Stop();
 
-  //! Copy the next frame from the camera to image.
-  //! Optionally wait for a frame if one isn't ready
-  //! Returns true iff image was copied
+  //! Implement VideoSource::GrabNext()
   bool GrabNext( unsigned char* image, bool wait = true );
 
-  //! Copy the newest frame from the camera to image
-  //! discarding all older frames.
-  //! Optionally wait for a frame if one isn't ready
-  //! Returns true iff image was copied
+  //! Implement VideoSource::GrabNewest()
   bool GrabNewest( unsigned char* image, bool wait = true );
 
   //! Return object containing reference to image data within
@@ -128,7 +132,7 @@ protected:
 
   bool running;
   dc1394camera_t *camera;
-  unsigned int width, height;
+  unsigned width, height;
   //dc1394featureset_t features;
   dc1394_t * d;
   dc1394camera_list_t * list;
@@ -139,4 +143,4 @@ protected:
 
 
 #endif // HAVE_DC1394
-#endif // PANGOLIN_VIDEOSOURCE_H
+#endif // PANGOLIN_FIREWIRE_H

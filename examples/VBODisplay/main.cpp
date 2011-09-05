@@ -19,11 +19,8 @@ using namespace std;
 const int mesh_width=256;
 const int mesh_height=256;
 
-
-
-
-extern "C" void launch_kernel(float4* pos, unsigned int mesh_width, unsigned int mesh_height, float time);
 extern "C" void launch_kernel_colour(float4* pos, uchar4* color, unsigned int mesh_width, unsigned int mesh_height, float time);
+extern "C" void launch_kernel(float4* dVertexArray, uchar4* dColourArray, unsigned int width, unsigned int height, float time);
 
 int main( int /*argc*/, char* argv[] )
 {
@@ -80,7 +77,7 @@ int main( int /*argc*/, char* argv[] )
     {
       CudaScopedMappedPtr var(vertex_array);
       CudaScopedMappedPtr car(colour_array);
-      launch_kernel_colour((float4*)*var,(uchar4*)*car,mesh_width,mesh_height,time);
+      launch_kernel((float4*)*var,(uchar4*)*car,mesh_width,mesh_height,time);
       time += delta;
     }
 

@@ -52,51 +52,54 @@ int main( int /*argc*/, char* argv[] )
       .SetBounds(1.0, 0.0, 0, 200);
 
   // Default hooks for exiting (Esc) and fullscreen (tab).
-  while(!pangolin::ShouldQuit() && glutGetWindow() )
+  for(int frame=0; !pangolin::ShouldQuit(); ++frame)
   {
-    if(HasResized())
-      DisplayBase().ActivateScissorAndClear();
 
-    // Safe and efficient binding of named variables.
-    // Specialisations mean no conversions take place for exact types
-    // and conversions between scalar types are cheap.
-    static Var<bool> a_button("ui.A Button",false,false);
-    static Var<double> a_double("ui.A Double",3,0,5.5);
-    static Var<int> an_int("ui.An Int",2,0,5);
-    static Var<bool> a_checkbox("ui.A Checkbox",false,true);
-    static Var<int> an_int_no_input("ui.An Int No Input",2);
-    static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
-    static Var<double> aliased_double("ui.Aliased Double",3,0,5.5);
+      if(HadInput() | !(frame%1000)){
+          if(HasResized())
+              DisplayBase().ActivateScissorAndClear();
 
-    if( Pushed(a_button) )
-      cout << "You Pushed a button!" << endl;
+          // Safe and efficient binding of named variables.
+          // Specialisations mean no conversions take place for exact types
+          // and conversions between scalar types are cheap.
+          static Var<bool> a_button("ui.A Button",false,false);
+          static Var<double> a_double("ui.A Double",3,0,5.5);
+          static Var<int> an_int("ui.An Int",2,0,5);
+          static Var<bool> a_checkbox("ui.A Checkbox",false,true);
+          static Var<int> an_int_no_input("ui.An Int No Input",2);
+          static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
+          static Var<double> aliased_double("ui.Aliased Double",3,0,5.5);
 
-    // Overloading of Var<T> operators allows us to treat them like
-    // their wrapped types, eg:
-    if( a_checkbox )
-      an_int = a_double;
+          if( Pushed(a_button) )
+              cout << "You Pushed a button!" << endl;
 
-    if( !any_type->z.compare("robot"))
-        any_type = (CustomType){1,2.3,"Boogie"};
+          // Overloading of Var<T> operators allows us to treat them like
+          // their wrapped types, eg:
+          if( a_checkbox )
+              an_int = a_double;
 
-    an_int_no_input = an_int;
+          if( !any_type->z.compare("robot"))
+              any_type = (CustomType){1,2.3,"Boogie"};
 
-    // Activate efficiently by object
-    // (3D Handler requires depth testing to be enabled)
-    d_cam.ActivateScissorAndClear(s_cam);
-    glEnable(GL_DEPTH_TEST);
-    glColor3f(1.0,1.0,1.0);
+          an_int_no_input = an_int;
 
-    // Render some stuff
-    glutWireTeapot(10.0);
+          // Activate efficiently by object
+          // (3D Handler requires depth testing to be enabled)
+          d_cam.ActivateScissorAndClear(s_cam);
+          glEnable(GL_DEPTH_TEST);
+          glColor3f(1.0,1.0,1.0);
 
-    // Render our UI panel when we receive input
-    if(HadInput())
-      d_panel.Render();
+          // Render some stuff
+          glutWireTeapot(10.0);
 
-    // Swap frames and Process Events
-    glutSwapBuffers();
-    glutMainLoopEvent();
+          // Render our UI panel when we receive input
+          if(HadInput())
+              d_panel.Render();
+
+          // Swap frames and Process Events
+          glutSwapBuffers();
+          glutMainLoopEvent();
+      }
   }
 
   return 0;

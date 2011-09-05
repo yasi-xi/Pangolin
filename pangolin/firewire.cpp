@@ -1,4 +1,31 @@
-#include "videosource.h"
+/* This file is part of the Pangolin Project.
+ * http://github.com/stevenlovegrove/Pangolin
+ *
+ * Copyright (c) 2011 Steven Lovegrove
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#include "firewire.h"
 #ifdef HAVE_DC1394
 
 #include <stdio.h>
@@ -66,6 +93,50 @@ void FirewireVideo::init_camera(
     Start();
 }
 
+std::string Dc1394ColorCodingToString(dc1394color_coding_t coding)
+{
+    switch(coding)
+    {
+    case DC1394_COLOR_CODING_MONO8 : return "MONO8";
+    case DC1394_COLOR_CODING_YUV411 : return "YUV411";
+    case DC1394_COLOR_CODING_YUV422 : return "YUV422";
+    case DC1394_COLOR_CODING_YUV444 : return "YUV444";
+    case DC1394_COLOR_CODING_RGB8 : return "RGB8";
+    case DC1394_COLOR_CODING_MONO16 : return "MONO16";
+    case DC1394_COLOR_CODING_RGB16 : return "RGB16";
+    case DC1394_COLOR_CODING_MONO16S : return "MONO16S";
+    case DC1394_COLOR_CODING_RGB16S : return "RGB16S";
+    case DC1394_COLOR_CODING_RAW8 : return "RAW8";
+    case DC1394_COLOR_CODING_RAW16 : return "RAW16";
+    default: return "";
+    }
+}
+
+dc1394color_coding_t Dc1394ColorCodingFromString(std::string coding)
+{
+    if( !coding.compare("MONO8")) return DC1394_COLOR_CODING_MONO8;
+    else if(!coding.compare("YUV411")) return DC1394_COLOR_CODING_YUV411;
+    else if(!coding.compare("YUV422")) return DC1394_COLOR_CODING_YUV422;
+    else if(!coding.compare("YUV444")) return DC1394_COLOR_CODING_YUV444;
+    else if(!coding.compare("RGB8")) return DC1394_COLOR_CODING_RGB8;
+    else if(!coding.compare("MONO16")) return DC1394_COLOR_CODING_MONO16;
+    else if(!coding.compare("RGB16")) return DC1394_COLOR_CODING_RGB16;
+    else if(!coding.compare("MONO16S")) return DC1394_COLOR_CODING_MONO16S;
+    else if(!coding.compare("RGB16S")) return DC1394_COLOR_CODING_RGB16S;
+    else if(!coding.compare("RAW8")) return DC1394_COLOR_CODING_RAW8;
+    else if(!coding.compare("RAW16")) return DC1394_COLOR_CODING_RAW16;
+    throw VideoException("Unknown Colour coding");
+}
+
+std::string FirewireVideo::PixFormat() const
+{
+    dc1394video_mode_t video_mode;
+    dc1394color_coding_t color_coding;
+    dc1394_video_get_mode(camera,&video_mode);
+    dc1394_get_color_coding_from_video_mode(camera,video_mode,&color_coding);
+    return Dc1394ColorCodingToString(color_coding);
+}
+
 void FirewireVideo::Start()
 {
     if( !running )
@@ -90,7 +161,7 @@ void FirewireVideo::Stop()
 }
 
 FirewireVideo::FirewireVideo(
-    uint64_t guid,
+    Guid guid,
     dc1394video_mode_t video_mode,
     dc1394framerate_t framerate,
     dc1394speed_t iso_speed,
@@ -101,7 +172,7 @@ FirewireVideo::FirewireVideo(
     if (!d)
         throw VideoException("");
 
-    init_camera(guid,dma_buffers,iso_speed,video_mode,framerate);
+    init_camera(guid.guid,dma_buffers,iso_speed,video_mode,framerate);
 }
 
 FirewireVideo::FirewireVideo(

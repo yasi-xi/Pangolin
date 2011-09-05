@@ -93,7 +93,11 @@ namespace pangolin
 
   bool ShouldQuit()
   {
+#ifdef HAVE_GLUT
+    return context->quit || !glutGetWindow();
+#else
     return context->quit;
+#endif
   }
 
   bool HadInput()
@@ -104,6 +108,17 @@ namespace pangolin
       return true;
     }
     return false;
+  }
+
+  bool HadMousePress()
+  {
+
+      if( context->mouse_state > 0 )
+      {
+        return true;
+      }
+      return false;
+
   }
 
   bool HasResized()
@@ -239,8 +254,9 @@ namespace pangolin
         context->windowed_size[0] = width;
         context->windowed_size[1] = width;
       }
-      context->had_input = context->is_double_buffered ? 2 : 1;
-      context->has_resized = context->is_double_buffered ? 2 : 1;
+      // TODO: Fancy display managers seem to cause this to mess up?
+      context->had_input = 20; //context->is_double_buffered ? 2 : 1;
+      context->has_resized = 20; //context->is_double_buffered ? 2 : 1;
       Viewport win(0,0,width,height);
       context->base.Resize(win);
     }
@@ -462,8 +478,8 @@ namespace pangolin
       // TODO: Make this neater, and make fewer assumptions!
       if( views.size() > 0 )
       {
-        const double this_a = v.aspect();
-        const double child_a = views[0]->aspect;
+        const double this_a = abs(v.aspect());
+        const double child_a = abs(views[0]->aspect);
         double a = views.size()*child_a;
         double area = AspectAreaWithinTarget(this_a, a);
 
@@ -680,7 +696,9 @@ namespace pangolin
       const int zsize = zl*zl;
       GLfloat zs[zsize];
       glReadPixels(x-hwin,y-hwin,zl,zl,GL_DEPTH_COMPONENT,GL_FLOAT,zs);
-      last_z = *(std::min_element(zs,zs+zsize));
+
+      const GLfloat mindepth = *(std::min_element(zs,zs+zsize));
+      last_z = mindepth != 1 ? mindepth : last_z;
 
       if( last_z != 1 )
       {

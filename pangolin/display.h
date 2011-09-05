@@ -71,6 +71,9 @@ namespace pangolin
   //! @brief Returns true if user has interacted with the window since this was last called
   bool HadInput();
 
+  //! @brief Returns true if user has pressed mouse buttons since this was last called
+  bool HadMousePress();
+
   //! @brief Returns true if user has resized the window
   bool HasResized();
 
@@ -312,7 +315,7 @@ namespace pangolin
   {
 
     Handler3D(OpenGlRenderState& cam_state, float trans_scale=0.01f)
-      : cam_state(&cam_state), /*hwin(3),*/ tf(trans_scale), cameraspec(CameraSpecOpenGl) {};
+      : cam_state(&cam_state), /*hwin(3),*/ tf(trans_scale), cameraspec(CameraSpecOpenGl), last_z(1.0) {};
 
     void SetOpenGlCamera();
     void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
