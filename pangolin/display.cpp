@@ -301,7 +301,12 @@ namespace pangolin
 
       // Render our UI panel when we receive input
       if(HadInput() || HadMousePress()){
+
+          if(HasResized())
+              DisplayBase().ActivateScissorAndClear();
+
           r();
+
           glutSwapBuffers();
       }
 
@@ -312,6 +317,9 @@ namespace pangolin
   void routineWrapper(){ (*pangolinRoutine)(r);}
 
   void runPangolin(void (*pt2Function)()){
+
+      glEnable (GL_BLEND);
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
       pangolinRoutine(pt2Function);
       glutDisplayFunc(routineWrapper);
