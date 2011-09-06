@@ -64,8 +64,8 @@ void myRoutine(){
     glEnable(GL_DEPTH_TEST);
     glColor3f(1.0,1.0,1.0);
 
-    // Render some stuff
-    glutWireTeapot(10.0);    
+    // Render some stuffvoid
+    glutWireTeapot(10.0);
 
     d_panel->Render();
 

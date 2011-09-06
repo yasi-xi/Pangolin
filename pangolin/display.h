@@ -97,7 +97,7 @@ namespace pangolin
     void MouseMotion( int x, int y);
   }
 
-#ifdef HAVE_GLUT  
+#ifdef HAVE_GLUT
 
   //! @brief Create GLUT window and bind Pangolin to it.
   //! All GLUT initialisation is taken care of. This prevents you
@@ -106,7 +106,7 @@ namespace pangolin
 
   //! @brief Allow Pangolin to take GLUT callbacks for its own uses
   //! Not needed if you instantiated a window through CreateWindowAndBind().
-  void TakeGlutCallbacks();  
+  void TakeGlutCallbacks();
 
   typedef void (*userDefinedRoutine)();
   void pangolinRoutine(userDefinedRoutine);
@@ -208,7 +208,7 @@ namespace pangolin
     static void ApplyIdentity();
     static void ApplyWindowCoords();
 
-    void Apply() const;
+    void Apply() const;    
     OpenGlRenderState& Set(OpenGlMatrixSpec spec);
     std::map<OpenGlStack,OpenGlMatrixSpec> stacks;
   };
@@ -276,6 +276,9 @@ namespace pangolin
     View& SetLock(Lock horizontal, Lock vertical );
     View& SetLayout(Layout layout);
     View& AddDisplay(View& view);
+
+    //! Check whether this View is current focused
+    bool isFocus() const;
 
     // Desired width / height aspect (0 if dynamic)
     double aspect;

@@ -303,7 +303,7 @@ namespace pangolin
       if(HadInput() || HadMousePress()){
 
           if(HasResized())
-              DisplayBase().ActivateScissorAndClear();
+              DisplayBase().ActivateScissorAndClear();          
 
           r();
 
@@ -320,6 +320,7 @@ namespace pangolin
 
       glEnable (GL_BLEND);
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glClearColor(0.0, 0.0, 0.0, 1.0);
 
       pangolinRoutine(pt2Function);
       glutDisplayFunc(routineWrapper);
@@ -679,6 +680,12 @@ namespace pangolin
   {
     handler = h;
     return *this;
+  }
+
+  bool View::isFocus() const{
+
+      return this==context->activeDisplay;
+
   }
 
   View* FindChild(View& parent, int x, int y)
