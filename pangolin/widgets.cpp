@@ -389,6 +389,12 @@ void Slider::Render()
   glutBitmapString(font,(unsigned char*)str.c_str());
 }
 
+bool Slider::isFocused() const{
+
+    return this == context->activeDisplay;
+
+}
+
 
 TextInput::TextInput(std::string title, _Var& tv)
   :Var<string>(tv), title(title+":"), do_edit(false)

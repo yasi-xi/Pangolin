@@ -84,6 +84,8 @@ struct Slider : public View, Handler, Var<double>
   void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
   void Render();
 
+  bool isFocused() const;
+
   std::string title;
 
   //Cache params on resize

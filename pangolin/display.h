@@ -278,7 +278,7 @@ namespace pangolin
     View& AddDisplay(View& view);
 
     //! Check whether this View is current focused
-    bool isFocus() const;
+    bool isFocused() const;
 
     // Desired width / height aspect (0 if dynamic)
     double aspect;

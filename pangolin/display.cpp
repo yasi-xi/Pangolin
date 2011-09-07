@@ -682,7 +682,7 @@ namespace pangolin
     return *this;
   }
 
-  bool View::isFocus() const{
+  bool View::isFocused() const{
 
       return this==context->activeDisplay;
 
