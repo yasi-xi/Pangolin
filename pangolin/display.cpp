@@ -110,17 +110,6 @@ namespace pangolin
     return false;
   }
 
-  bool HadMousePress()
-  {
-
-      if( context->mouse_state > 0 )
-      {
-        return true;
-      }
-      return false;
-
-  }
-
   bool HasResized()
   {
     if( context->has_resized > 0 )
@@ -300,7 +289,7 @@ namespace pangolin
       r = pt2function;
 
       // Render our UI panel when we receive input
-      if(HadInput() || HadMousePress()){
+      if(HadInput()){
 
           if(HasResized())
               DisplayBase().ActivateScissorAndClear();          
