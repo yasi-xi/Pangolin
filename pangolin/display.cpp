@@ -288,7 +288,6 @@ namespace pangolin
 
       // Render our UI panel when we receive input
       if(HadInput()){
-          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
           if(HasResized())
               DisplayBase().ActivateScissorAndClear();          
