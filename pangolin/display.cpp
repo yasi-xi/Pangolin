@@ -284,12 +284,11 @@ namespace pangolin
   userDefinedRoutine r;
 
 
-  void pangolinRoutine(void (*pt2function)()){
-
-      r = pt2function;
+  void pangolinRoutine(){
 
       // Render our UI panel when we receive input
       if(HadInput()){
+          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
           if(HasResized())
               DisplayBase().ActivateScissorAndClear();          
@@ -303,16 +302,15 @@ namespace pangolin
           glutLeaveMainLoop();
   }
 
-  void routineWrapper(){ (*pangolinRoutine)(r);}
-
   void runPangolin(void (*pt2Function)()){
+
+      r = pt2Function;
 
       glEnable (GL_BLEND);
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glClearColor(0.0, 0.0, 0.0, 1.0);
 
-      pangolinRoutine(pt2Function);
-      glutDisplayFunc(routineWrapper);
+      glutDisplayFunc(pangolinRoutine);
       glutTimerFunc(0, timerFunction, 1);
 
       // Default hooks for exiting (Esc) and fullscreen (tab).
