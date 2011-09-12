@@ -109,8 +109,12 @@ namespace pangolin
   void TakeGlutCallbacks();
 
   typedef void (*userDefinedRoutine)();
-  void pangolinRoutine(userDefinedRoutine);
-  void routineWrapper();
+  typedef void (*userDefinedSpecialFunc)(int, int, int);
+
+  void pangolinRoutine(userDefinedRoutine);  
+  void pangolinSpecialKeyFunction(int, int, int);
+
+  void specialKeyBindPangolin(void (*pt2Function)(int, int, int));
   void runPangolin(void (*pt2Function)());
 
   void idleFunction();

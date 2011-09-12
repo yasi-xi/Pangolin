@@ -281,8 +281,8 @@ namespace pangolin
 
   }    
 
-  userDefinedRoutine r;
-
+  userDefinedRoutine r;  
+  userDefinedSpecialFunc sf;
 
   void pangolinRoutine(){
 
@@ -301,6 +301,21 @@ namespace pangolin
           glutLeaveMainLoop();
   }
 
+  void pangolinSpecialKeyFunction(int key, int x, int y){
+
+      context->had_input = context->is_double_buffered ? 2 : 1;
+      sf(key, x, y);
+
+  }
+
+
+  void specialKeyBindPangolin(void (*pt2Function)(int, int, int)){
+
+      sf = pt2Function;
+      glutSpecialFunc(pangolinSpecialKeyFunction);
+
+  }
+
   void runPangolin(void (*pt2Function)()){
 
       r = pt2Function;
@@ -309,8 +324,11 @@ namespace pangolin
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glClearColor(0.0, 0.0, 0.0, 1.0);
 
-      glutDisplayFunc(pangolinRoutine);
+      glutDisplayFunc(pangolinRoutine);      
       glutTimerFunc(0, timerFunction, 1);
+
+      // Overwrite glut keyboard function
+
 
       // Default hooks for exiting (Esc) and fullscreen (tab).
       glutMainLoop();
