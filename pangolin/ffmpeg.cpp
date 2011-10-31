@@ -140,10 +140,10 @@ FfmpegVideo::FfmpegVideo(const char *filename, const std::string strfmtout)
     audioStream=-1;
     for(unsigned i=0; i<pFormatCtx->nb_streams; i++)
     {
-        if(pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO)
+        if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO)
         {
             videoStream=i;
-        }else if(pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_AUDIO)
+        }else if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO)
         {
             audioStream=i;
         }
@@ -249,8 +249,10 @@ bool FfmpegVideo::GrabNext(unsigned char* image, bool /*wait*/)
         if(packet.stream_index==videoStream)
         {
             // Decode video frame
-            avcodec_decode_video(pVidCodecCtx, pFrame, &gotFrame,
-                packet.data, packet.size);
+//            avcodec_decode_video(pVidCodecCtx, pFrame, &gotFrame,
+//                packet.data, packet.size);
+            avcodec_decode_video2(pVidCodecCtx, pFrame, &gotFrame,
+                            &packet);
         }
 
         // Did we get a video frame?

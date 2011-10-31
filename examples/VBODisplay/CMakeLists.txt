@@ -17,7 +17,7 @@ IF(FREEGLUT_FOUND AND CUDA_FOUND AND GLEW_FOUND AND Boost_FOUND)
   LINK_DIRECTORIES( ${CUDA_SDK_ROOT_DIR}/lib )
   LINK_DIRECTORIES( ${CUDA_SDK_ROOT_DIR}/common/lib )
 
-  SET(CUDA_NVCC_FLAGS "-O3;-arch=sm_11;--compiler-bindir=/usr/bin/g++-4.3;--verbose" )
+  SET(CUDA_NVCC_FLAGS "-O3;-arch=sm_11;--compiler-bindir=/opt/gcc44;--verbose" )
   ADD_DEFINITIONS(-DCUDA_BUILD)
 
   LINK_DIRECTORIES( ${Boost_LIBRARY_DIRS} )
