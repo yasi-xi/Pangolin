@@ -25,39 +25,46 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef PANGOLIN_DISPLAY_INTERNAL_H
-#define PANGOLIN_DISPLAY_INTERNAL_H
+#ifndef PANGOLIN_THREADED_WRITE_H
+#define PANGOLIN_THREADED_WRITE_H
 
-#include "platform.h"
-#include "display.h"
-#include <boost/ptr_container/ptr_unordered_map.hpp>
+#include <iostream>
+#include <streambuf>
+#include <fstream>
+
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
 
 namespace pangolin
 {
 
-  struct PangolinGl
-  {
-    PangolinGl();
+class threadedfilebuf : public std::streambuf
+{
+public:
+    threadedfilebuf(const std::string& filename, unsigned int buffer_size_bytes);
+    ~threadedfilebuf();
 
-    // Base container for displays
-    View base;
-    boost::ptr_unordered_map<const std::string,View> all_views;
+    void operator()();
 
-    // Manage fullscreen (ToggleFullscreen is quite new)
-    bool is_double_buffered;
-    bool is_fullscreen;
-    GLint windowed_size[2];
+protected:
+    //! Override streambuf::xsputn for asynchronous write
+    std::streamsize xsputn(const char * s, std::streamsize n);
 
-    // State relating to interactivity
-    bool quit;
-    int had_input;
-    int has_resized;
-    int mouse_state;
-    View* activeDisplay;
+    std::filebuf file;
+    char* mem_buffer;
+    int mem_size;
+    int mem_max_size;
+    int mem_start;
+    int mem_end;
 
-  };
+    boost::mutex update_mutex;
+    boost::condition_variable cond_queued;
+    boost::condition_variable cond_dequeued;
+    boost::thread write_thread;
+};
 
 }
 
-#endif // PANGOLIN_DISPLAY_INTERNAL_H
 
+#endif // PANGOLIN_THREADED_WRITE_H

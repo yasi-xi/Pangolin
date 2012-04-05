@@ -43,7 +43,7 @@ namespace pangolin
 
   const int panal_v_margin = 6;
 
-  typedef map<string,PangolinGl*> ContextMap;
+  typedef boost::ptr_unordered_map<string,PangolinGl> ContextMap;
 
   // Map of active contexts
   ContextMap contexts;
@@ -63,11 +63,11 @@ namespace pangolin
     if( ic == contexts.end() )
     {
       // Create and add if not found
-      ic = contexts.insert( pair<string,PangolinGl*>(name,new PangolinGl) ).first;
+      ic = contexts.insert( name,new PangolinGl ).first;
       context = ic->second;
       View& dc = context->base;
-      dc.left = 0;
-      dc.bottom = 0;
+      dc.left = 0.0;
+      dc.bottom = 0.0;
       dc.top = 1.0;
       dc.right = 1.0;
       dc.aspect = 0;
@@ -128,15 +128,15 @@ namespace pangolin
   View& Display(const std::string& name)
   {
     // Get / Create View
-    std::map<std::string,View*>::iterator vi = context->all_views.find(name);
+    boost::ptr_unordered_map<std::string,View>::iterator vi = context->all_views.find(name);
     if( vi != context->all_views.end() )
     {
       return *(vi->second);
     }else{
-      View* v = new View();
+      View * v = new View();
+      bool inserted = context->all_views.insert(name, v).second;
+      if(!inserted) throw exception();
       v->handler = &StaticHandler;
-      context->all_views[name] = v;
-//      context->base[name] = v;
       context->base.views.push_back(v);
       return *v;
     }
@@ -393,6 +393,14 @@ namespace pangolin
     glMultMatrixd(m);
   }
 
+  void OpenGlMatrixSpec::SetIdentity()
+  {
+      m[0] = 1.0f;  m[1] = 0.0f;  m[2] = 0.0f;  m[3] = 0.0f;
+      m[4] = 0.0f;  m[5] = 1.0f;  m[6] = 0.0f;  m[7] = 0.0f;
+      m[8] = 0.0f;  m[9] = 0.0f; m[10] = 1.0f; m[11] = 0.0f;
+     m[12] = 0.0f; m[13] = 0.0f; m[14] = 0.0f; m[15] = 1.0f;
+  }
+
   void OpenGlRenderState::Apply() const
   {
     // Apply any stack matrices we have
@@ -450,8 +458,13 @@ namespace pangolin
     // Compute Bounds based on specification
     v.l = AttachAbs(p.l,p.r(),left);
     v.b = AttachAbs(p.b,p.t(),bottom);
-    const int r = AttachAbs(p.l,p.r(),right);
-    const int t = AttachAbs(p.b,p.t(),top);
+    int r = AttachAbs(p.l,p.r(),right);
+    int t = AttachAbs(p.b,p.t(),top);
+
+    // Make sure left and right, top and bottom are correct order
+    if( t < v.b ) swap(t,v.b);
+    if( r < v.l ) swap(r,v.l);
+
     v.w = r - v.l;
     v.h = t - v.b;
 
@@ -509,10 +522,17 @@ namespace pangolin
     {
       // Allocate space incrementally
       Viewport space = v.Inset(panal_v_margin);
+      int num_children = 0;
       foreach(View* i, views )
       {
-        i->Resize(space);
-        space.h = i->v.b - panal_v_margin - space.b;
+        num_children++;
+        if(scroll_offset > num_children ) {
+            i->show = false;
+        }else{
+            i->show = true;
+            i->Resize(space);
+            space.h = i->v.b - panal_v_margin - space.b;
+        }
       }
     }else if(layout == LayoutHorizontal )
     {
@@ -578,7 +598,7 @@ namespace pangolin
   void View::RenderChildren()
   {
     foreach(View* v, views)
-      v->Render();
+      if(v->show) v->Render();
   }
 
   void View::Activate() const
@@ -626,14 +646,14 @@ namespace pangolin
     return *this;
   }
 
-  View& View::SetBounds(Attach top, Attach bottom,  Attach left, Attach right, bool keep_aspect)
+  View& View::SetBounds(Attach bottom, Attach top,  Attach left, Attach right, bool keep_aspect)
   {
     SetBounds(top,bottom,left,right,0.0);
     aspect = keep_aspect ? v.aspect() : 0;
     return *this;
   }
 
-  View& View::SetBounds(Attach top, Attach bottom,  Attach left, Attach right, double aspect)
+  View& View::SetBounds(Attach bottom, Attach top,  Attach left, Attach right, double aspect)
   {
     this->left = left;
     this->top = top;
@@ -695,7 +715,7 @@ namespace pangolin
   View* FindChild(View& parent, int x, int y)
   {
     for( vector<View*>::const_iterator i = parent.views.begin(); i != parent.views.end(); ++i )
-      if( (*i)->vp.Contains(x,y) )
+      if( (*i)->show && (*i)->vp.Contains(x,y) )
         return (*i);
     return 0;
   }
@@ -731,6 +751,20 @@ namespace pangolin
       if( child->handler)
         child->handler->MouseMotion(*child,x,y,button_state);
     }
+  }
+
+  void HandlerScroll::Mouse(View& d, MouseButton button, int x, int y, bool pressed, int button_state)
+  {
+    if( button == button_state && (button == MouseWheelUp || button == MouseWheelDown) )
+    {
+        if( button == MouseWheelUp) d.scroll_offset   -= 1;
+        if( button == MouseWheelDown) d.scroll_offset += 1;
+        d.scroll_offset = max(0, min(d.scroll_offset, (int)d.views.size()) );
+        d.ResizeChildren();
+    }else{
+        Handler::Mouse(d,button,x,y,pressed,button_state);
+    }
+
   }
 
   void Handler3D::Mouse(View& display, MouseButton button, int x, int y, bool pressed, int button_state)
@@ -918,6 +952,35 @@ namespace pangolin
       return P;
   }
 
+  // Camera Axis:
+  //   X - Right, Y - Down, Z - Forward
+  // Image Origin:
+  //   Bottom Left
+  // Pricipal point specified with image origin (0,0) at top left of top-left pixel (not center)
+  OpenGlMatrixSpec ProjectionMatrixRDF_BottomLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar )
+  {
+      // http://www.songho.ca/opengl/gl_projectionmatrix.html
+      const double L = -(u0) * zNear / fu;
+      const double R = +(w-u0) * zNear / fu;
+      const double B = -(v0) * zNear / fv;
+      const double T = +(h-v0) * zNear / fv;
+
+      OpenGlMatrixSpec P;
+      P.type = GlProjectionStack;
+      std::fill_n(P.m,4*4,0);
+
+      P.m[0*4+0] = 2 * zNear / (R-L);
+      P.m[1*4+1] = 2 * zNear / (T-B);
+
+      P.m[2*4+0] = (R+L)/(L-R);
+      P.m[2*4+1] = (T+B)/(B-T);
+      P.m[2*4+2] = (zFar +zNear) / (zFar - zNear);
+      P.m[2*4+3] = 1.0;
+
+      P.m[3*4+2] =  (2*zFar*zNear)/(zNear - zFar);
+      return P;
+  }
+
   OpenGlMatrixSpec IdentityMatrix(OpenGlStack type)
   {
     OpenGlMatrixSpec P;
@@ -937,21 +1000,6 @@ namespace pangolin
     P.m[3*4+3] =1;
     return P;
   }
-
-#ifdef HAVE_TOON
-  OpenGlMatrixSpec FromTooN(OpenGlStack type, const TooN::Matrix<4,4>& M)
-  {
-      // Read in remembering col-major convension for our matrices
-      OpenGlMatrixSpec P;
-      P.type = type;
-      int el = 0;
-      for(int c=0; c<4; ++c)
-          for(int r=0; r<4; ++r)
-              P.m[el++] = M[r][c];
-      return P;
-  }
-#endif
-
 
   void DrawTextureToViewport(GLuint texid)
   {

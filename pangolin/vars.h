@@ -30,6 +30,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/ptr_container/ptr_unordered_map.hpp>
 #include <sstream>
 #include <map>
 #include <vector>
@@ -57,6 +58,10 @@ struct Var
       bool logscale=false);
   Var(_Var& var);
 
+  ~Var(){
+    delete a;
+  }
+
   operator const T& ();
   const T* operator->();
   void operator=(const T& val);
@@ -81,6 +86,9 @@ void ParseVarsFile(const std::string& filename);
 
 typedef void (*NewVarCallbackFn)(void* data, const std::string& name, _Var& var, const char* reg_type_name, bool brand_new);
 void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter = "");
+
+typedef void (*GuiVarChangedCallbackFn)(void* data, const std::string& name, _Var& var);
+void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
 
 template<typename T>
 T FromFile( const std::string& filename, const T& init = T());
@@ -177,8 +185,18 @@ struct NewVarCallback
   void* data;
 };
 
-extern std::map<std::string,_Var> vars;
-extern std::vector<NewVarCallback> callbacks;
+struct GuiVarChangedCallback
+{
+  GuiVarChangedCallback(const std::string& filter, GuiVarChangedCallbackFn fn, void* data)
+    :filter(filter),fn(fn),data(data) {}
+  std::string filter;
+  GuiVarChangedCallbackFn fn;
+  void* data;
+};
+
+extern boost::ptr_unordered_map<std::string,_Var> vars;
+extern std::vector<NewVarCallback> new_var_callbacks;
+extern std::vector<GuiVarChangedCallback> gui_var_changed_callbacks;
 
 template<typename T>
 inline void Var<T>::Init(const std::string& name,
@@ -188,7 +206,7 @@ inline void Var<T>::Init(const std::string& name,
                          int  flags,
                          bool logscale)
 {
-  std::map<std::string,_Var>::iterator vi = vars.find(name);
+  boost::ptr_unordered_map<std::string,_Var>::iterator vi = vars.find(name);
 
   std::vector<std::string> parts;
   boost::split(parts,name,boost::is_any_of("."));
@@ -197,30 +215,31 @@ inline void Var<T>::Init(const std::string& name,
   if( vi != vars.end() )
   {
     // found
-    var = &vi->second;
+    var = vi->second;
     a = Accessor<T>::Create(var->type_name,var->val);
     if( var->generic && var->type_name != typeid(T).name() )
     {
       // re-specialise this variable
-//      std::cout << "Specialising " << name << std::endl;
+      //      std::cout << "Specialising " << name << std::endl;
       default_value = a->Get();
-      delete a;
-      free(var->val);
 
     }else{
-      // Meta info for variable
-      var->meta_friendly = parts.size() > 0 ? parts[parts.size()-1] : "";
-      var->meta_range[0] = min;
-      var->meta_range[1] = max;
-      var->meta_flags = flags;
-      var->logscale = logscale;
+//      // Meta info for variable
+//      var->meta_full_name = name;
+//      var->meta_friendly = parts.size() > 0 ? parts[parts.size()-1] : "";
+//      var->meta_range[0] = min;
+//      var->meta_range[1] = max;
+//      var->meta_flags = flags;
+//      var->logscale = logscale;
+//      var->meta_gui_changed = false;
 
       // notify those watching new variables
-      BOOST_FOREACH(NewVarCallback& nvc, callbacks)
-        if( boost::starts_with(name,nvc.filter) )
+      BOOST_FOREACH(NewVarCallback& nvc, new_var_callbacks)
+          if( boost::starts_with(name,nvc.filter) )
           nvc.fn(nvc.data,name,*var, typeid(T).name(), false);
       return;
     }
+    delete a;
   }
 
   // Create var of base type T
@@ -233,25 +252,25 @@ inline void Var<T>::Init(const std::string& name,
     Accessor<T>* da = 0;
 
     if( boost::is_same<T,bool>::value ) {
-      *var = _Var(new bool, new bool, typeid(bool).name() );
+      var->create(new bool, new bool, typeid(bool).name() );
       a = new _Accessor<T,bool>( *(bool*)var->val );
       da = new _Accessor<T,bool>( *(bool*)var->val_default );
     }else if( boost::is_integral<T>::value ) {
-      *var = _Var(new int, new int, typeid(int).name() );
+      var->create(new int, new int, typeid(int).name() );
       var->meta_increment = std::max(1.0,default_increment);
       a = new _Accessor<T,int>( *(int*)var->val );
       da = new _Accessor<T,int>( *(int*)var->val_default );
     }else if( boost::is_scalar<T>::value ) {
-      *var = _Var(new double, new double, typeid(double).name() );
+      var->create(new double, new double, typeid(double).name() );
       var->meta_increment = default_increment;
       a = new _Accessor<T,double>( *(double*)var->val );
       da = new _Accessor<T,double>( *(double*)var->val_default );
     }else{
-      *var = _Var(
-        new std::string(Convert<std::string,T>::Do(default_value)),
-        new std::string,
-        typeid(std::string).name()
-      );
+      var->create(
+            new std::string(Convert<std::string,T>::Do(default_value)),
+            new std::string,
+            typeid(std::string).name()
+            );
       a = new _Accessor<T,std::string>( *(std::string*)var->val );
       da = new _Accessor<T,std::string>( *(std::string*)var->val_default );
     }
@@ -261,31 +280,34 @@ inline void Var<T>::Init(const std::string& name,
     delete da;
 
     // Meta info for variable
+    var->meta_full_name = name;
     var->meta_friendly = parts.size() > 0 ? parts[parts.size()-1] : "";
     var->meta_range[0] = min;
     var->meta_range[1] = max;
     var->meta_flags = flags;
     var->generic = false;
     var->logscale = logscale;
+    var->meta_gui_changed = false;
 
     // notify those watching new variables
-    BOOST_FOREACH(NewVarCallback& nvc, callbacks)
-      if( boost::starts_with(name,nvc.filter) )
+    BOOST_FOREACH(NewVarCallback& nvc, new_var_callbacks)
+        if( boost::starts_with(name,nvc.filter) )
         nvc.fn(nvc.data,name,*var, typeid(T).name(), true);
   }
 }
 
 inline void ProcessHistoricCallbacks(NewVarCallbackFn callback, void* data, const std::string& filter)
 {
-    for( std::map<std::string,_Var>::iterator i = vars.begin(); i != vars.end(); ++i )
+    for( boost::ptr_unordered_map<std::string,_Var>::iterator i = vars.begin();
+         i != vars.end(); ++i )
     {
         const std::string& name = i->first;
 
-        if( boost::starts_with(name,filter) )
-        {
-            callback(data,name,i->second, typeid(std::string).name(), false);
-        }
+    if( boost::starts_with(name,filter) )
+    {
+      callback(data,name,*(i->second), typeid(std::string).name(), false);
     }
+  }
 
 }
 

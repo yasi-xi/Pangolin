@@ -179,6 +179,14 @@ inline void CopyPboToTex(const GlBufferCudaPtr& buffer, GlTexture& tex, GLenum b
   tex.Bind();
   glTexImage2D(GL_TEXTURE_2D, 0, tex.internal_format, tex.width, tex.height, 0, buffer_layout, buffer_data_type, 0);
   buffer.Unbind();
+  tex.Unbind();
+}
+
+template<typename T>
+inline void CopyDevMemtoTex(T* d_img, size_t pitch, GlTextureCudaArray& tex )
+{
+  CudaScopedMappedArray arr_tex(tex);
+  cudaMemcpy2DToArray(*arr_tex, 0, 0, d_img, pitch, tex.width*sizeof(T), tex.height, cudaMemcpyDeviceToDevice );
 }
 
 inline void swap(GlBufferCudaPtr& a, GlBufferCudaPtr& b)

@@ -25,39 +25,59 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef PANGOLIN_DISPLAY_INTERNAL_H
-#define PANGOLIN_DISPLAY_INTERNAL_H
+#ifndef PANGOLIN_INPUT_RECORD_REPEAT_H
+#define PANGOLIN_INPUT_RECORD_REPEAT_H
 
-#include "platform.h"
-#include "display.h"
-#include <boost/ptr_container/ptr_unordered_map.hpp>
+#include "pangolin.h"
+
+#include "video.h"
+#include "video_recorder.h"
+
+#include <list>
 
 namespace pangolin
 {
 
-  struct PangolinGl
-  {
-    PangolinGl();
+struct FrameInput
+{
+    int index;
+    std::string var;
+    std::string val;
+};
 
-    // Base container for displays
-    View base;
-    boost::ptr_unordered_map<const std::string,View> all_views;
+struct InputRecordRepeat
+{
+    InputRecordRepeat(const std::string& var_record_prefix);
+    ~InputRecordRepeat();
 
-    // Manage fullscreen (ToggleFullscreen is quite new)
-    bool is_double_buffered;
-    bool is_fullscreen;
-    GLint windowed_size[2];
+    void SetIndex(int id);
 
-    // State relating to interactivity
-    bool quit;
-    int had_input;
-    int has_resized;
-    int mouse_state;
-    View* activeDisplay;
+    void Record();
+    void Stop();
 
-  };
+    void LoadBuffer(const std::string& filename);
+    void SaveBuffer(const std::string& filename);
+    void ClearBuffer();
+
+    void PlayBuffer();
+    void PlayBuffer(int start, int end);
+
+    int Size();
+
+protected:
+    bool record;
+    bool play;
+
+    int index;
+    std::ofstream file;
+    std::string filename;
+
+    std::list<FrameInput> play_queue;
+    std::list<FrameInput> record_queue;
+
+    static void GuiVarChanged(void* data, const std::string& name, _Var& var);
+};
 
 }
 
-#endif // PANGOLIN_DISPLAY_INTERNAL_H
-
+#endif // PANGOLIN_INPUT_RECORD_REPEAT_H

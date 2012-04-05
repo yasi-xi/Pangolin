@@ -37,6 +37,8 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
+#include <math.h>
+
 namespace pangolin
 {
 
@@ -53,6 +55,9 @@ struct GlTexture
   void Unbind() const;
 
   void Upload(void* image, GLenum data_layout = GL_LUMINANCE, GLenum data_type = GL_FLOAT);
+
+  void SetLinear();
+  void SetNearestNeighbour();
 
   void RenderToViewport() const;
   void RenderToViewportFlipY() const;
@@ -84,6 +89,10 @@ struct GlFramebuffer
   GLuint fbid;
   unsigned attachments;
 };
+
+void glColorHSV( double hue, double s, double v );
+
+void glColorBin( int bin, int max_bins, double sat = 1.0, double val = 1.0 );
 
 
 ////////////////////////////////////////////////
@@ -145,6 +154,23 @@ inline void GlTexture::Upload(void* image, GLenum data_layout, GLenum data_type 
   Bind();
   glTexSubImage2D(GL_TEXTURE_2D,0,0,0,width,height,data_layout,data_type,image);
 }
+
+inline void GlTexture::SetLinear()
+{
+  Bind();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  Unbind();
+}
+
+inline void GlTexture::SetNearestNeighbour()
+{
+  Bind();
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  Unbind();
+}
+
 
 
 inline void GlTexture::RenderToViewport() const
@@ -243,6 +269,41 @@ inline void GlFramebuffer::Unbind() const
 {
   glDrawBuffers( 1, attachment_buffers );
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
+// h [0,360)
+// s [0,1]
+// v [0,1]
+inline void glColorHSV( double hue, double s, double v )
+{
+  const double h = hue / 60.0;
+  const int i = floor(h);
+  const double f = (i%2 == 0) ? 1-(h-i) : h-i;
+  const double m = v * (1-s);
+  const double n = v * (1-s*f);
+  switch(i)
+  {
+  case 0: glColor3d(v,n,m); break;
+  case 1: glColor3d(n,v,m); break;
+  case 2: glColor3d(m,v,n); break;
+  case 3: glColor3d(m,n,v); break;
+  case 4: glColor3d(n,m,v); break;
+  case 5: glColor3d(v,m,n); break;
+  default:
+    break;
+  }
+
+}
+
+inline void glColorBin( int bin, int max_bins, double sat, double val )
+{
+  if( bin >= 0 )
+  {
+    const double hue = (double)(bin%max_bins) * 360.0 / (double)max_bins;
+    glColorHSV(hue,sat,val);
+  }else{
+    glColor3f(1,1,1);
+  }
 }
 
 

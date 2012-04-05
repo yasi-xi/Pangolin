@@ -6,17 +6,21 @@
 
 #include <pangolin/pangolin.h>
 #include <pangolin/video.h>
+#include <pangolin/video_recorder.h>
 
 using namespace pangolin;
 using namespace std;
 
-void VideoSample(const std::string uri)
+void RecordSample(const std::string uri, const std::string filename)
 {
     // Setup Video Source
     VideoInput video(uri);
     VideoPixelFormat vid_fmt = VideoFormatFromString(video.PixFormat());
     const unsigned w = video.Width();
     const unsigned h = video.Height();
+
+    // Setup async video recorder with 50 frame memory buffer
+    VideoRecorder recorder(filename, w, h, vid_fmt.format, video.SizeBytes()*50 );
 
     // Create Glut window
     pangolin::CreateGlutWindowAndBind("Main",w,h);
@@ -29,12 +33,18 @@ void VideoSample(const std::string uri)
 
     unsigned char* img = new unsigned char[video.SizeBytes()];
 
-    for(int frame=0; !pangolin::ShouldQuit(); ++frame)
+    while( !pangolin::ShouldQuit() )
     {
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-        video.GrabNext(img,true);
-        texVideo.Upload(img, vid_fmt.channels==1 ? GL_LUMINANCE:GL_RGB, GL_UNSIGNED_BYTE);
+        if( video.GrabNext(img,true) )
+        {
+            // Upload to GPU as texture for display
+            texVideo.Upload(img, vid_fmt.channels==1 ? GL_LUMINANCE:GL_RGB, GL_UNSIGNED_BYTE);
+
+            // Record video frame
+            recorder.RecordFrame(img);
+        }
 
         // Activate video viewport and render texture
         vVideo.Activate();
@@ -50,7 +60,6 @@ void VideoSample(const std::string uri)
     delete[] img;
 }
 
-
 int main( int argc, char* argv[] )
 {
     std::string uris[] = {
@@ -60,11 +69,16 @@ int main( int argc, char* argv[] )
         ""
     };
 
-    if( argc > 1 ) {
+    std::string filename = "video.pvn";
+
+    if( argc >= 2 ) {
         const string uri = std::string(argv[1]);
-        VideoSample(uri);
+        if( argc == 3 ) {
+            filename = std::string(argv[2]);
+        }
+        RecordSample(uri, filename);
     }else{
-        cout << "Usage  : SimpleRecord [video-uri]" << endl << endl;
+        cout << "Usage  : SimpleRecord [video-uri] [output-filename]" << endl << endl;
         cout << "Where video-uri describes a stream or file resource, e.g." << endl;
         cout << "\tfile:[realtime=1]///home/user/video/movie.pvn" << endl;
         cout << "\tfile:///home/user/video/movie.avi" << endl;
@@ -81,11 +95,12 @@ int main( int argc, char* argv[] )
         {
             try{
                 cout << "Trying: " << uris[i] << endl;
-                VideoSample(uris[i]);
+                RecordSample(uris[i], filename);
                 return 0;
             }catch(VideoException) {}
         }
     }
 
     return 0;
+
 }

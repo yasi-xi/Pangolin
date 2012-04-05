@@ -41,7 +41,9 @@
 #endif
 
 #ifdef HAVE_TOON
+#include <cstring>
 #include <TooN/TooN.h>
+#include <TooN/se3.h>
 #endif
 
 #ifdef _WIN_
@@ -134,12 +136,32 @@ namespace pangolin
   //! fraction in interval [0,1]
   struct Attach {
     Attach() : unit(Fraction), p(0) {}
-    Attach(int p) : unit(p >=0 ? Pixel : ReversePixel), p(std::abs((float)p)) {}
-    Attach(GLfloat p) : unit(Fraction), p(p) {}
-    Attach(GLdouble p) : unit(Fraction), p(p) {}
-    Attach(int p, bool reverse) : unit(ReversePixel), p(p) {}
+    Attach(Unit unit, GLfloat p) : unit(unit), p(p) {}
+
+    Attach(GLfloat p) : unit(Fraction), p(p) {
+        if( p < 0 || 1.0 < p ) {
+            std::cerr << "Pangolin API Change: Display::SetBounds must be used with Attach::Pix or Attach::ReversePix to specify pixel bounds relative to an edge. See the code samples for details." << std::endl;
+            throw std::exception();
+        }
+    }
+
+//    Attach(GLdouble p) : unit(Fraction), p(p) {}
+
+    static Attach Pix(int p) {
+        return Attach(p >=0 ? Pixel : ReversePixel, std::abs((float)p));
+    }
+    static Attach ReversePix(int p) {
+        return Attach(ReversePixel, p);
+    }
+    static Attach Frac(float frac) {
+        return Attach(frac);
+    }
+
     Unit unit;
     GLfloat p;
+
+//  protected:
+//    Attach(int p) {}
   };
 
 
@@ -197,6 +219,8 @@ namespace pangolin
 
     void Multiply() const;
 
+    void SetIdentity();
+
     // Specify which stack this refers to
     OpenGlStack type;
 
@@ -232,8 +256,10 @@ namespace pangolin
   struct View
   {
     View()
-      : aspect(0.0), top(1.0),left(0),right(1.0),bottom(0), hlock(LockCenter),vlock(LockCenter),
-        layout(LayoutOverlay), handler(0) {}
+      : aspect(0.0), top(1.0),left(0.0),right(1.0),bottom(0.0), hlock(LockCenter),vlock(LockCenter),
+        layout(LayoutOverlay), scroll_offset(0), show(1), handler(0) {}
+
+    virtual ~View() {}
 
     //! Activate Displays viewport for drawing within this area
     void Activate() const;
@@ -270,10 +296,10 @@ namespace pangolin
     View& SetFocus();
 
     //! Set bounds for the View using mixed fractional / pixel coordinates (OpenGl view coordinates)
-    View& SetBounds(Attach top, Attach bottom,  Attach left, Attach right, bool keep_aspect = false);
+    View& SetBounds(Attach bottom, Attach top, Attach left, Attach right, bool keep_aspect = false);
 
     //! Set bounds for the View using mixed fractional / pixel coordinates (OpenGl view coordinates)
-    View& SetBounds(Attach top, Attach bottom,  Attach left, Attach right, double aspect);
+    View& SetBounds(Attach bottom, Attach top, Attach left, Attach right, double aspect);
 
     View& SetHandler(Handler* handler);
     View& SetAspect(double aspect);
@@ -293,11 +319,16 @@ namespace pangolin
     Lock vlock;
     Layout layout;
 
+    int scroll_offset;
+
     // Cached client area (space allocated from parent)
     Viewport vp;
 
     // Cached absolute viewport (recomputed on resize - respects aspect)
     Viewport v;
+
+    // Should this view be displayed?
+    bool show;
 
     // Input event handler (if any)
     Handler* handler;
@@ -307,7 +338,7 @@ namespace pangolin
 
   private:
     // Private copy constructor
-    View(View& v) { /* Do Not copy - take reference instead*/ }
+    View(View&) { /* Do Not copy - take reference instead*/ }
   };
 
   enum MouseButton
@@ -323,17 +354,24 @@ namespace pangolin
   //! into sub-displays
   struct Handler
   {
+    virtual ~Handler() {}
     virtual void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
     virtual void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
     virtual void MouseMotion(View&, int x, int y, int button_state);
   };
   static Handler StaticHandler;
 
+  struct HandlerScroll : Handler
+  {
+    void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
+  };
+  static HandlerScroll StaticHandlerScroll;
+
   struct Handler3D : Handler
   {
 
     Handler3D(OpenGlRenderState& cam_state, float trans_scale=0.01f)
-      : cam_state(&cam_state), /*hwin(3),*/ tf(trans_scale), cameraspec(CameraSpecOpenGl), last_z(1.0) {};
+      : cam_state(&cam_state), /*hwin(3),*/ tf(trans_scale), cameraspec(CameraSpecOpenGl), last_z(1.0) {}
 
     void SetOpenGlCamera();
     void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
@@ -353,6 +391,7 @@ namespace pangolin
 
   OpenGlMatrixSpec ProjectionMatrixRUB_BottomLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
   OpenGlMatrixSpec ProjectionMatrixRDF_TopLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
+  OpenGlMatrixSpec ProjectionMatrixRDF_BottomLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
 
   // Use OpenGl's default frame RUB_BottomLeft
   OpenGlMatrixSpec ProjectionMatrix(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
@@ -361,16 +400,73 @@ namespace pangolin
   OpenGlMatrixSpec negIdentityMatrix(OpenGlStack type);
 
 #ifdef HAVE_TOON
+  OpenGlMatrixSpec FromTooN(const TooN::SE3<>& T_cw);
   OpenGlMatrixSpec FromTooN(OpenGlStack type, const TooN::Matrix<4,4>& M);
+  TooN::Matrix<4,4> ToTooN(const OpenGlMatrixSpec& ms);
+  TooN::SE3<> ToTooN_SE3(const OpenGlMatrixSpec& ms);
 #endif
 
 
 }
 
-inline pangolin::Viewport::Viewport(GLint l,GLint b,GLint w,GLint h) : l(l),b(b),w(w),h(h) {};
-inline GLint pangolin::Viewport::r() const { return l+w;}
-inline GLint pangolin::Viewport::t() const { return b+h;}
-inline GLfloat pangolin::Viewport::aspect() const { return (GLfloat)w / (GLfloat)h; }
+// Inline definitions
+namespace pangolin
+{
+
+inline Viewport::Viewport(GLint l,GLint b,GLint w,GLint h) : l(l),b(b),w(w),h(h) {}
+inline GLint Viewport::r() const { return l+w;}
+inline GLint Viewport::t() const { return b+h;}
+inline GLfloat Viewport::aspect() const { return (GLfloat)w / (GLfloat)h; }
+
+#ifdef HAVE_TOON
+
+inline OpenGlMatrixSpec FromTooN(const TooN::SE3<>& T_cw)
+{
+    TooN::Matrix<4,4,double,TooN::ColMajor> M;
+    M.slice<0,0,3,3>() = T_cw.get_rotation().get_matrix();
+    M.T()[3].slice<0,3>() = T_cw.get_translation();
+    M[3] = TooN::makeVector(0,0,0,1);
+
+    OpenGlMatrixSpec P;
+    P.type = GlModelViewStack;
+    std::memcpy(P.m, &(M[0][0]),16*sizeof(double));
+    return P;
+}
+
+inline OpenGlMatrixSpec FromTooN(OpenGlStack type, const TooN::Matrix<4,4>& M)
+{
+    // Read in remembering col-major convension for our matrices
+    OpenGlMatrixSpec P;
+    P.type = type;
+    int el = 0;
+    for(int c=0; c<4; ++c)
+        for(int r=0; r<4; ++r)
+            P.m[el++] = M[r][c];
+    return P;
+}
+
+inline TooN::Matrix<4,4> ToTooN(const OpenGlMatrixSpec& ms)
+{
+    TooN::Matrix<4,4> m;
+    int el = 0;
+    for( int c=0; c<4; ++c )
+        for( int r=0; r<4; ++r )
+            m(r,c) = ms.m[el++];
+    return m;
+}
+
+inline TooN::SE3<> ToTooN_SE3(const OpenGlMatrixSpec& ms)
+{
+    TooN::Matrix<4,4> m = ToTooN(ms);
+    const TooN::SO3<> R(m.slice<0,0,3,3>());
+    const TooN::Vector<3> t = m.T()[3].slice<0,3>();
+    return TooN::SE3<>(R,t);
+}
+
+
+#endif
+
+}
 
 #endif // PANGOLIN_DISPLAY_H
 

@@ -42,10 +42,9 @@ extern "C"
 #define UINT64_C(c) (c ## ULL)
 #endif
 
-#include <avcodec.h>
 #include <avformat.h>
 #include <swscale.h>
-#include "pixdesc.h"
+#include <pixdesc.h>
 }
 
 namespace pangolin
@@ -54,7 +53,7 @@ namespace pangolin
 class FfmpegVideo : public VideoInterface
 {
 public:
-    FfmpegVideo(const char* filename, const std::string strfmtout = "rgb24");
+    FfmpegVideo(const std::string filename, const std::string fmtout = "RGB24", const std::string codec_hint = "");
     ~FfmpegVideo();
 
     //! Implement VideoSource::Start()
@@ -67,6 +66,8 @@ public:
 
     unsigned Height() const;
 
+    size_t SizeBytes() const;
+
     std::string PixFormat() const;
 
     bool GrabNext( unsigned char* image, bool wait = true );
@@ -74,6 +75,8 @@ public:
     bool GrabNewest( unsigned char* image, bool wait = true );
 
 protected:
+    void InitUrl(const std::string filename, const std::string fmtout = "RGB24", const std::string codec_hint = "" );
+
     AVFormatContext *pFormatCtx;
     int             videoStream;
     int             audioStream;
@@ -106,13 +109,14 @@ enum FfmpegMethod
 class FfmpegConverter : public VideoInterface
 {
 public:
-    FfmpegConverter(VideoInterface* videoin, const std::string pixelfmtout = "RGB24", FfmpegMethod method = FFMPEG_FAST_BILINEAR);
+    FfmpegConverter(VideoInterface* videoin, const std::string pixelfmtout = "RGB24", FfmpegMethod method = FFMPEG_POINT);
     ~FfmpegConverter();
 
     void Start();
     void Stop();
     unsigned Width() const;
     unsigned Height() const;
+    size_t SizeBytes() const;
     std::string PixFormat() const;
 
     bool GrabNext( unsigned char* image, bool wait = true );

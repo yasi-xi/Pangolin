@@ -5,10 +5,6 @@ SET(PANGOLIN_VERSION_MINOR 1)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
-IF (CMAKE_COMPILER_IS_GNUCXX )
-  ADD_DEFINITIONS("-Wall -Wno-error=deprecated-declarations -Werror")
-ENDIF()
-
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
 
 # SET(BUILD_SHARED_LIBS ON)
@@ -24,6 +20,16 @@ ENDIF()
 INCLUDE(SetPlatformVars)
 
 STRING(TOLOWER ${PROJECT_NAME} LIBRARY_NAME)
+
+# make an uninstall target 
+CONFIGURE_FILE(
+ 	"${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake.in"
+  	"${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake"
+  	IMMEDIATE @ONLY
+)
+
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake")
 
 ADD_SUBDIRECTORY(${LIBRARY_NAME})
 

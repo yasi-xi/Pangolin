@@ -27,6 +27,8 @@
 
 #include "widgets.h"
 
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
 #include <iostream>
 #include <iomanip>
 #include "display_internal.h"
@@ -51,27 +53,39 @@ const static float colour_hl[4] = {0.9, 0.9, 0.9, 1.0};
 const static float colour_dn[4] = {1.0, 0.7 ,0.7, 1.0};
 static void* font = GLUT_BITMAP_HELVETICA_12;
 static int text_height = 8; //glutBitmapHeight(font) * 0.7;
-static float cb_height = text_height * 1.6;
+static int cb_height = text_height * 1.6;
+
+boost::mutex display_mutex;
+
+template<typename T>
+void GuiVarChanged( Var<T>& var)
+{
+  var.var->meta_gui_changed = true;
+
+  BOOST_FOREACH(GuiVarChangedCallback& gvc, gui_var_changed_callbacks)
+      if( boost::starts_with(var.var->meta_full_name,gvc.filter) )
+      gvc.fn(gvc.data,var.var->meta_full_name,*var.var);
+}
 
 void glRect(Viewport v)
 {
-  glRectf(v.l,v.t()-1,v.r()-1,v.b);
+  glRecti(v.l,v.b,v.r(),v.t());
 }
 
 void glRect(Viewport v, int inset)
 {
-  glRectf(v.l+inset,v.t()-inset-1,v.r()-inset-1,v.b+inset);
+  glRecti(v.l+inset,v.b+inset,v.r()-inset,v.t()-inset);
 }
 
 void DrawShadowRect(Viewport& v)
 {
   glColor4fv(colour_s2);
   glBegin(GL_LINE_STRIP);
-  glVertex2f(v.l,v.b);
-  glVertex2f(v.l,v.t());
-  glVertex2f(v.r(),v.t());
-  glVertex2f(v.r(),v.b);
-  glVertex2f(v.l,v.b);
+  glVertex2i(v.l,v.b);
+  glVertex2i(v.l,v.t());
+  glVertex2i(v.r(),v.t());
+  glVertex2i(v.r(),v.b);
+  glVertex2i(v.l,v.b);
   glEnd();
 }
 
@@ -79,28 +93,30 @@ void DrawShadowRect(Viewport& v, bool pushed)
 {
   glColor4fv(pushed ? colour_s1 : colour_s2);
   glBegin(GL_LINE_STRIP);
-  glVertex2f(v.l,v.b);
-  glVertex2f(v.l,v.t());
-  glVertex2f(v.r(),v.t());
+  glVertex2i(v.l,v.b);
+  glVertex2i(v.l,v.t());
+  glVertex2i(v.r(),v.t());
   glEnd();
 
   glColor3fv(pushed ? colour_s2 : colour_s1);
   glBegin(GL_LINE_STRIP);
-  glVertex2f(v.r(),v.t());
-  glVertex2f(v.r(),v.b);
-  glVertex2f(v.l,v.b);
+  glVertex2i(v.r(),v.t());
+  glVertex2i(v.r(),v.b);
+  glVertex2i(v.l,v.b);
   glEnd();
 }
 
 Panel::Panel()
+  : context_views(context->all_views)
 {
-  handler = &StaticHandler;
+  handler = &StaticHandlerScroll;
   layout = LayoutVertical;
 }
 
 Panel::Panel(const std::string& auto_register_var_prefix)
+  : context_views(context->all_views)
 {
-  handler = &StaticHandler;
+  handler = &StaticHandlerScroll;
   layout = LayoutVertical;
   RegisterNewVarCallback(&Panel::AddVariable,(void*)this,auto_register_var_prefix);
 
@@ -114,37 +130,45 @@ void Panel::AddVariable(void* data, const std::string& name, _Var& var, const ch
 
   const string& title = var.meta_friendly;
 
-  std::map<std::string,View*>::iterator pnl =
-      context->all_views.find(name);
+  display_mutex.lock();
+
+  boost::ptr_unordered_map<const std::string,View>::iterator pnl =
+    thisptr->context_views.find(name);
 
   // Only add if a widget by the same name doesn't
   // already exist
-  if( pnl == context->all_views.end() )
+  if( pnl == thisptr->context_views.end() )
   {
     if( reg_type_name == typeid(bool).name() )
     {
       View* nv = var.meta_flags ? (View*)new Checkbox(title,var) : (View*)new Button(title,var);
-      context->all_views[name] = nv;
+      //thisptr->context_views[name] = nv;
+      thisptr->context_views.insert(name,nv);
       thisptr->views.push_back(nv);
       thisptr->ResizeChildren();
     }else if( reg_type_name == typeid(double).name() || reg_type_name == typeid(float).name() || reg_type_name == typeid(int).name() || reg_type_name == typeid(unsigned int).name() )
     {
       View* nv = new Slider(title,var);
-      context->all_views[name] = nv;
+      //thisptr->context_views[name] = nv;
+      thisptr->context_views.insert(name,nv);
       thisptr->views.push_back( nv );
       thisptr->ResizeChildren();
     }else{
       View* nv = new TextInput(title,var);
-      context->all_views[name] = nv;
+      //thisptr->context_views[name] = nv;
+      thisptr->context_views.insert(name,nv);
       thisptr->views.push_back( nv );
       thisptr->ResizeChildren();
     }
   }
 
+  display_mutex.unlock();
 }
 
 void Panel::Render()
 {
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_SCISSOR_BIT | GL_VIEWPORT_BIT);
+
   OpenGlRenderState::ApplyWindowCoords();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_SCISSOR_TEST);
@@ -154,31 +178,33 @@ void Panel::Render()
   glColor4fv(colour_s2);
   glRect(v);
   glColor4fv(colour_bg);
-  glRect(vinside);
+  glRect(v,1);
 
   RenderChildren();
+
+  glPopAttrib();
 }
 
 void Panel::ResizeChildren()
 {
-  vinside = v.Inset(border,border);
   View::ResizeChildren();
 }
 
 
 View& CreatePanel(const std::string& name)
 {
-  Panel* v = new Panel(name);
-  context->all_views[name] = v;
-  context->base.views.push_back(v);
-  return *v;
+  Panel * p = new Panel(name);
+  bool inserted = context->all_views.insert(name, p).second;
+  if(!inserted) throw exception();
+  context->base.views.push_back(p);
+  return *p;
 }
 
 Button::Button(string title, _Var& tv)
   : Var<bool>(tv), title(title), down(false)
 {
-  top = 1.0; bottom = -20;
-  left = 0; right = 1.0;
+  top = 1.0; bottom = Attach::Pix(-20);
+  left = 0.0; right = 1.0;
   hlock = LockLeft;
   vlock = LockBottom;
   handler = this;
@@ -187,18 +213,24 @@ Button::Button(string title, _Var& tv)
 
 void Button::Mouse(View&, MouseButton button, int x, int y, bool pressed, int mouse_state)
 {
-  down = pressed;
-  if( !pressed ) a->Set(!a->Get());
+    if(button == MouseButtonLeft )
+    {
+      down = pressed;
+      if( !pressed ) {
+        a->Set(!a->Get());
+        GuiVarChanged(*this);
+      }
+    }
 }
 
 void Button::Render()
 {
-  DrawShadowRect(v, down);
   glColor4fv(colour_fg );
-  glRect(vinside);
+  glRect(v);
   glColor4fv(colour_tx);
   glRasterPos2f(raster[0],raster[1]-down);
   glutBitmapString(font,(unsigned char*)title.c_str());
+  DrawShadowRect(v, down);
 }
 
 void Button::ResizeChildren()
@@ -211,8 +243,8 @@ void Button::ResizeChildren()
 Checkbox::Checkbox(std::string title, _Var& tv)
   :Var<bool>(tv), title(title)
 {
-  top = 1.0; bottom = -20;
-  left = 0; right = 1.0;
+  top = 1.0; bottom = Attach::Pix(-20);
+  left = 0.0; right = 1.0;
   hlock = LockLeft;
   vlock = LockBottom;
   handler = this;
@@ -220,16 +252,18 @@ Checkbox::Checkbox(std::string title, _Var& tv)
 
 void Checkbox::Mouse(View&, MouseButton button, int x, int y, bool pressed, int mouse_state)
 {
-  if( pressed )
+  if( button == MouseButtonLeft && pressed ) {
     a->Set(!a->Get());
+    GuiVarChanged(*this);
+  }
 }
 
 void Checkbox::ResizeChildren()
 {
   raster[0] = v.l + cb_height + 4;
   raster[1] = v.b + (v.h-text_height)/2.0;
-  const float h = v.h;
-  const float t = (h-cb_height) / 2.0;
+  const int h = v.h;
+  const int t = (h-cb_height) / 2.0;
   vcb = Viewport(v.l,v.b+t,cb_height,cb_height);
 }
 
@@ -237,7 +271,6 @@ void Checkbox::Render()
 {
   const bool val = a->Get();
 
-  DrawShadowRect(vcb, val);
   if( val )
   {
     glColor4fv(colour_dn);
@@ -246,14 +279,15 @@ void Checkbox::Render()
   glColor4fv(colour_tx);
   glRasterPos2fv( raster );
   glutBitmapString(font,(unsigned char*)title.c_str());
+  DrawShadowRect(vcb, val);
 }
 
 
 Slider::Slider(std::string title, _Var& tv)
   :Var<double>(tv), title(title+":"), lock_bounds(true)
 {
-  top = 1.0; bottom = -20;
-  left = 0; right = 1.0;
+  top = 1.0; bottom = Attach::Pix(-20);
+  left = 0.0; right = 1.0;
   hlock = LockLeft;
   vlock = LockBottom;
   handler = this;
@@ -264,10 +298,7 @@ void Slider::Keyboard(View&, unsigned char key, int x, int y, bool pressed){
 
   if( pressed && var->meta_range[0] < var->meta_range[1] )
   {
-    double val = a->Get();
-
-    if (logscale)
-      val = log(val);
+    double val = !logscale ? a->Get() : log(a->Get());
 
     if(key=='-'){
       if (logscale)
@@ -277,11 +308,14 @@ void Slider::Keyboard(View&, unsigned char key, int x, int y, bool pressed){
     }else if(key == '='){
       if (logscale)
         a->Set( exp(max(var->meta_range[0],min(var->meta_range[1],val + var->meta_increment) ) ) );
-      if (logscale)
+      else
         a->Set( max(var->meta_range[0],min(var->meta_range[1],val + var->meta_increment) ) );
     }else if(key == 'r'){
       Reset();
+    }else{
+      return;
     }
+    GuiVarChanged(*this);
   }
 }
 
@@ -314,10 +348,7 @@ void Slider::Mouse(View& view, MouseButton button, int x, int y, bool pressed, i
   }else{
     if(!lock_bounds)
     {
-      double val = a->Get();
-
-      if (logscale)
-        val = log(val);
+      double val = !logscale ? a->Get() : log(a->Get());
 
       var->meta_range[0] = min(var->meta_range[0], val);
       var->meta_range[1] = max(var->meta_range[1], val);
@@ -341,12 +372,11 @@ void Slider::MouseMotion(View&, int x, int y, int mouse_state)
       val = frac * range + var->meta_range[0];
     }
 
-    if (logscale)
-      val = exp(val);
+    if (logscale) val = exp(val);
 
      a->Set(val);
-
-   }
+     GuiVarChanged(*this);
+  }
 }
 
 
@@ -360,8 +390,6 @@ void Slider::Render()
 {
   const double val = a->Get();
 
-
-
   if( var->meta_range[0] != var->meta_range[1] )
   {
     double rval = val;
@@ -369,12 +397,12 @@ void Slider::Render()
     {
       rval = log(val);
     }
-    DrawShadowRect(v);
     glColor4fv(colour_fg);
     glRect(v);
     glColor4fv(colour_dn);
     const double norm_val = max(0.0,min(1.0,(rval - var->meta_range[0]) / (var->meta_range[1] - var->meta_range[0])));
     glRect(Viewport(v.l,v.b,v.w*norm_val,v.h));
+    DrawShadowRect(v);
   }
 
   glColor4fv(colour_tx);
@@ -399,8 +427,8 @@ bool Slider::isFocused() const{
 TextInput::TextInput(std::string title, _Var& tv)
   :Var<string>(tv), title(title+":"), do_edit(false)
 {
-  top = 1.0; bottom = -20;
-  left = 0; right = 1.0;
+  top = 1.0; bottom = Attach::Pix(-20);
+  left = 0.0; right = 1.0;
   hlock = LockLeft;
   vlock = LockBottom;
   handler = this;
@@ -417,6 +445,8 @@ void TextInput::Keyboard(View&, unsigned char key, int x, int y, bool pressed)
     if(key == 13)
     {
       a->Set(edit);
+      GuiVarChanged(*this);
+
       do_edit = false;
       sel[0] = sel[1] = -1;
     }else if(key == 8) {
@@ -471,41 +501,44 @@ void TextInput::Keyboard(View&, unsigned char key, int x, int y, bool pressed)
 
 void TextInput::Mouse(View& view, MouseButton button, int x, int y, bool pressed, int mouse_state)
 {
-
-  if(do_edit)
-  {
-    const int sl = glutBitmapLength(font,(unsigned char*)edit.c_str()) + 2;
-    const int rl = v.l + v.w - sl;
-    int ep = edit.length();
-
-    if( x < rl )
+    if(button != MouseWheelUp && button != MouseWheelDown )
     {
-      ep = 0;
-    }else{
-      for( unsigned i=0; i<edit.length(); ++i )
+
+      if(do_edit)
       {
-        const int tl = rl + glutBitmapLength(font,(unsigned char*)edit.substr(0,i).c_str());
-        if(x < tl+2)
+        const int sl = glutBitmapLength(font,(unsigned char*)edit.c_str()) + 2;
+        const int rl = v.l + v.w - sl;
+        int ep = edit.length();
+
+        if( x < rl )
         {
-          ep = i;
-          break;
+          ep = 0;
+        }else{
+          for( unsigned i=0; i<edit.length(); ++i )
+          {
+            const int tl = rl + glutBitmapLength(font,(unsigned char*)edit.substr(0,i).c_str());
+            if(x < tl+2)
+            {
+              ep = i;
+              break;
+            }
+          }
         }
+        if(pressed)
+        {
+          sel[0] = sel[1] = ep;
+        }else{
+          sel[1] = ep;
+        }
+
+        if(sel[0] > sel[1])
+          std::swap(sel[0],sel[1]);
+      }else{
+        do_edit = !pressed;
+        sel[0] = 0;
+        sel[1] = edit.length();
       }
     }
-    if(pressed)
-    {
-      sel[0] = sel[1] = ep;
-    }else{
-      sel[1] = ep;
-    }
-
-    if(sel[0] > sel[1])
-      std::swap(sel[0],sel[1]);
-  }else{
-    do_edit = !pressed;
-    sel[0] = 0;
-    sel[1] = edit.length();
-  }
 }
 
 void TextInput::MouseMotion(View&, int x, int y, int mouse_state)
@@ -546,7 +579,6 @@ void TextInput::Render()
 {
   if(!do_edit) edit = a->Get();
 
-  DrawShadowRect(v);
   glColor4fv(colour_fg);
   glRect(v);
 
@@ -567,6 +599,7 @@ void TextInput::Render()
 
   glRasterPos2f( rl, raster[1] );
   glutBitmapString(font,(unsigned char*)edit.c_str());
+  DrawShadowRect(v);
 }
 
 }

@@ -25,39 +25,54 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef PANGOLIN_DISPLAY_INTERNAL_H
-#define PANGOLIN_DISPLAY_INTERNAL_H
+#include "video_recorder.h"
 
-#include "platform.h"
-#include "display.h"
-#include <boost/ptr_container/ptr_unordered_map.hpp>
+using namespace std;
 
 namespace pangolin
 {
 
-  struct PangolinGl
-  {
-    PangolinGl();
+VideoRecorder::VideoRecorder(
+    const std::string& filename,
+    int stream0_width, int stream0_height, std::string stream0_fmt,
+    unsigned int buffer_size_bytes
+    ) : frames(0), buffer(filename, buffer_size_bytes), writer(&buffer)
+{
+    VideoStream strm0;
+    strm0.name = "main";
+    strm0.w = stream0_width;
+    strm0.h = stream0_height;
+    strm0.fmt = VideoFormatFromString(stream0_fmt);
+    strm0.frame_size_bytes = (strm0.w * strm0.h * strm0.fmt.bpp) / 8;
 
-    // Base container for displays
-    View base;
-    boost::ptr_unordered_map<const std::string,View> all_views;
-
-    // Manage fullscreen (ToggleFullscreen is quite new)
-    bool is_double_buffered;
-    bool is_fullscreen;
-    GLint windowed_size[2];
-
-    // State relating to interactivity
-    bool quit;
-    int had_input;
-    int has_resized;
-    int mouse_state;
-    View* activeDisplay;
-
-  };
-
+    stream_info.push_back(strm0);
 }
 
-#endif // PANGOLIN_DISPLAY_INTERNAL_H
+VideoRecorder::~VideoRecorder()
+{
+}
 
+void VideoRecorder::WriteFileHeader()
+{
+    writer << stream_info[0].fmt.format << "\n";
+    writer << stream_info[0].w  << "\n";
+    writer << stream_info[0].h  << "\n";
+    writer << "30.0\n";
+}
+
+int VideoRecorder::RecordFrame(void* img)
+{
+    if( stream_info.size() != 1 )
+        throw VideoRecorderException("Incorrect number of frames specified");
+
+    if(frames==0)
+        WriteFileHeader();
+
+    const VideoStream& strm = stream_info[0];
+
+    writer.write((char*)img,strm.frame_size_bytes);
+
+    return frames++;
+}
+
+}

@@ -15,13 +15,19 @@ SET(
   firewire.h firewire.cpp
   v4l.h v4l.cpp
   ffmpeg.h ffmpeg.cpp
+  pvn_video.h pvn_video.cpp
+  video_recorder.h video_recorder.cpp
+  threadedfilebuf.h threadedfilebuf.cpp
+  timer.h
+  video_record_repeat.h video_record_repeat.cpp
+  input_record_repeat.h input_record_repeat.cpp
 )
 
 #######################################################
 ## Find required dependencies
 
 FIND_PACKAGE(OpenGL REQUIRED QUIET)
-FIND_PACKAGE(Boost REQUIRED QUIET)
+FIND_PACKAGE(Boost COMPONENTS thread REQUIRED QUIET)
 
 #######################################################
 ## Find optional dependencies
@@ -30,10 +36,8 @@ FIND_PACKAGE(CUDA QUIET)
 IF(CUDA_FOUND)
   SET(HAVE_CUDA 1)
   CUDA_INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-  INCLUDE_DIRECTORIES( ${CUDA_SDK_ROOT_DIR}/common/inc )
-  LINK_DIRECTORIES( ${CUDA_SDK_ROOT_DIR}/lib )
-  LINK_DIRECTORIES( ${CUDA_SDK_ROOT_DIR}/common/lib )
   SET(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
+  SET(CUDA_NVCC_FLAGS "-O3" )
   SET(CUDA_NVCC_FLAGS "-O3;-arch=sm_11;--verbose" )
   ADD_DEFINITIONS(-DCUDA_BUILD)
   MESSAGE(STATUS "CUDA Found and Enabled")
@@ -69,21 +73,23 @@ IF(FFMPEG_FOUND)
   MESSAGE(STATUS "ffmpeg Found and Enabled")
 ENDIF()
 
-#FIND_PACKAGE(TOON QUIET)
-#IF(TOON_FOUND)
+FIND_PACKAGE(TooN QUIET)
+IF(TooN_FOUND)
   SET(HAVE_TOON 1)
-#ENDIF()
+  INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${TooN_INCLUDE_DIR} )
+  MESSAGE(STATUS "TooN Found and Enabled")
+ENDIF()
 
 ## Apply required dependencies settings
 INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${Boost_INCLUDE_DIRS} )
 INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${OPENGL_INCLUDE_DIR} )
-TARGET_LINK_LIBRARIES( ${LIBRARY_NAME} ${OPENGL_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${LIBRARY_NAME} ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} )
 
 ## Set Special Compiler flags
 IF(MSVC)
   SET(CMAKE_CXX_FLAGS "/EHs")
-ELSE()
-  SET(CMAKE_CXX_FLAGS "-Wall")
+ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
+  SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations -Werror")
 ENDIF()
 
 #######################################################
@@ -94,3 +100,36 @@ CONFIGURE_FILE(
   "${CMAKE_CURRENT_BINARY_DIR}/config.h"
 )
 INCLUDE_DIRECTORIES("${PROJECT_BINARY_DIR}")
+
+#######################################################
+## Define headers files associated with the install target 
+SET(INSTALL_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/config.h 
+	cg.h 
+	display.h 
+	display_internal.h 
+	ffmpeg.h 
+	firewire.h 
+	gl.h 
+	glcuda.h 
+	pangolin.h 
+	platform.h 
+	plotter.h 
+	simple_math.h 
+	v4l.h 
+	vars.h 
+	vars_internal.h 
+	video.h 
+	widgets.h
+)
+
+# install headers
+INSTALL(FILES ${INSTALL_HEADERS} 
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${LIBRARY_NAME}
+)
+
+# install library
+INSTALL(TARGETS ${LIBRARY_NAME}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)

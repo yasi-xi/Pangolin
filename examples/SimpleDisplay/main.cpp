@@ -23,6 +23,10 @@ std::istream& operator>> (std::istream& is, CustomType& o){
   return is;
 }
 
+int main( int /*argc*/, char* argv[] )
+{
+  // Load configuration data
+  pangolin::ParseVarsFile("app.cfg");
 OpenGlRenderState s_cam;
 View *d_cam;
 View *d_panel;
@@ -34,16 +38,32 @@ void myRoutine(){
     if(HasResized())
         DisplayBase().ActivateScissorAndClear();
 
+  // Add named OpenGL viewport to window and provide 3D Handler
+  View& d_cam = pangolin::Display("cam")
+    .SetBounds(0.0, 1.0, Attach::Pix(200), 1.0, -640.0f/480.0f)
+    .SetHandler(new Handler3D(s_cam));
+
+  // Add named Panel and bind to variables beginning 'ui'
+  // A Panel is just a View with a default layout and input handling
+  View& d_panel = pangolin::CreatePanel("ui")
+      .SetBounds(0.0, 1.0, 0.0, Attach::Pix(200));
+
+  // Default hooks for exiting (Esc) and fullscreen (tab).
+  while( !pangolin::ShouldQuit() )
+  {
+    if(pangolin::HasResized())
+      DisplayBase().ActivateScissorAndClear();
+
     // Safe and efficient binding of named variables.
     // Specialisations mean no conversions take place for exact types
     // and conversions between scalar types are cheap.
     static Var<bool> a_button("ui.A Button",false,false);
-    static Var<double> a_double("ui.A Double",3,1,10000,true);
+    static Var<double> a_double("ui.A Double",3,0,5);
     static Var<int> an_int("ui.An Int",2,0,5);
+    static Var<double> a_double_log("ui.Log scale var",3,1,1E4, true);
     static Var<bool> a_checkbox("ui.A Checkbox",false,true);
     static Var<int> an_int_no_input("ui.An Int No Input",2);
     static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
-    static Var<double> aliased_double("ui.Aliased Double",3,0,10000);
 
     if( Pushed(a_button) )
         cout << "You Pushed a button!" << endl;
@@ -65,7 +85,8 @@ void myRoutine(){
     glColor3f(1.0,1.0,1.0);
 
     // Render some stuffvoid
-    glutWireTeapot(10.0);
+    glTranslatef(0,0,-3);
+    glutWireTeapot(1.0);
 
     d_panel->Render();
 

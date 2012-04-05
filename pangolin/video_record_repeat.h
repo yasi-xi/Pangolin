@@ -25,83 +25,51 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef PANGOLIN_V4L_H
-#define PANGOLIN_V4L_H
+#ifndef PANGOLIN_VIDEO_RECORD_REPEAT_H
+#define PANGOLIN_VIDEO_RECORD_REPEAT_H
 
 #include "pangolin.h"
+
 #include "video.h"
-
-#ifndef _WIN32
-
-#include <asm/types.h>
-#include <linux/videodev2.h>
+#include "video_recorder.h"
 
 namespace pangolin
 {
 
-typedef enum {
-    IO_METHOD_READ,
-    IO_METHOD_MMAP,
-    IO_METHOD_USERPTR,
-} io_method;
-
-struct buffer {
-    void*  start;
-    size_t length;
-};
-
-class V4lVideo : public VideoInterface
+struct VideoRecordRepeat : public VideoInterface
 {
-public:
-    V4lVideo(const char* dev_name, io_method io = IO_METHOD_MMAP);
-    ~V4lVideo();
-
-    //! Implement VideoSource::Start()
-    void Start();
-
-    //! Implement VideoSource::Stop()
-    void Stop();
+    VideoRecordRepeat(
+        std::string uri, std::string save_filename, int buffer_size_bytes
+    );
+    ~VideoRecordRepeat();
 
     unsigned Width() const;
-
     unsigned Height() const;
-
     size_t SizeBytes() const;
-
     std::string PixFormat() const;
 
+    void Start();
+    void Stop();
     bool GrabNext( unsigned char* image, bool wait = true );
-
     bool GrabNewest( unsigned char* image, bool wait = true );
 
+    void Record();
+    void Play(bool realtime = true);
+    void Source();
+
+    int FrameId();
+
 protected:
-    int ReadFrame(unsigned char* image);
-    void Mainloop();
+    VideoInterface* video_src;
+    VideoInterface* video_file;
+    VideoRecorder* video_recorder;
 
-    void init_read(unsigned int buffer_size);
-    void init_mmap(const char* dev_name);
-    void init_userp(const char* dev_name, unsigned int buffer_size);
+    std::string filename;
+    int buffer_size_bytes;
 
-    void init_device(const char* dev_name, unsigned iwidth, unsigned iheight, unsigned ifps, unsigned v4l_format = V4L2_PIX_FMT_YUYV, v4l2_field field = V4L2_FIELD_INTERLACED);
-    void uninit_device();
-
-    void open_device(const char* dev_name);
-    void close_device();
-
-
-    io_method io;
-    int       fd;
-    buffer*   buffers;
-    unsigned  int n_buffers;
-    bool running;
-    unsigned width;
-    unsigned height;
-    float fps;
-    size_t image_size;
+    int frame_num;
 };
 
 }
 
-#endif // _WIN32
-
-#endif // PANGOLIN_V4L_H
+#endif // PANGOLIN_VIDEO_RECORD_REPEAT_H
