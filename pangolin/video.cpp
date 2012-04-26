@@ -252,9 +252,9 @@ VideoInterface* OpenVideo(std::string str_uri)
         video = new FfmpegConverter(subvid,outfmt,FFMPEG_POINT);
     }else
 #endif //HAVE_FFMPEG
-    if(!uri.scheme.compare("v4l")) {
-        video = new V4lVideo(uri.url.c_str());
-    }else
+    //if(!uri.scheme.compare("v4l")) {
+    //    video = new V4lVideo(uri.url.c_str());
+    //}else
 #ifdef HAVE_DC1394
     if(!uri.scheme.compare("firewire") || !uri.scheme.compare("dc1394") ) {
         // Default parameters

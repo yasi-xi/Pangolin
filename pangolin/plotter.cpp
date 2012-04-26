@@ -44,8 +44,8 @@ static void* font = GLUT_BITMAP_HELVETICA_12;
 
 DataSequence::DataSequence(unsigned int buffer_size, unsigned size, float val )
   : y(buffer_size,size,val), n(0), sum_y(0), sum_y_sq(0),
-    min_y(numeric_limits<float>::max()),
-    max_y(numeric_limits<float>::min())
+    min_y((numeric_limits<float>::max)()),
+    max_y((numeric_limits<float>::min)())
 {
 
 }
@@ -55,8 +55,8 @@ void DataSequence::Add(float val)
   y.push_back(val);
   ++n;
   firstn = n-y.size();
-  min_y = std::min(min_y,val);
-  max_y = std::max(max_y,val);
+  min_y = (std::min)(min_y,val);
+  max_y = (std::max)(max_y,val);
   sum_y += val;
   sum_y_sq += val*val;
 }
@@ -68,8 +68,8 @@ void DataSequence::Clear()
   firstn = 0;
   sum_y = 0;
   sum_y_sq = 0;
-  min_y = numeric_limits<float>::max();
-  max_y = numeric_limits<float>::min();
+  min_y = (numeric_limits<float>::max)();
+  max_y = (numeric_limits<float>::min)();
 }
 
 float DataSequence::operator[](unsigned int i) const
@@ -237,8 +237,8 @@ void Plotter::DrawSequence(const DataSequence& seq)
 {
   const int seqint_x[2] = {seq.firstn, seq.n };
   const int valid_int_x[2] = {
-    std::max(seqint_x[0],(int)int_x[0]),
-    std::min(seqint_x[1],(int)int_x[1])
+    (std::max)(seqint_x[0],(int)int_x[0]),
+    (std::min)(seqint_x[1],(int)int_x[1])
   };
   glBegin(draw_modes[draw_mode]);
   for( int x=valid_int_x[0]; x<valid_int_x[1]; ++x )
@@ -249,9 +249,9 @@ void Plotter::DrawSequence(const DataSequence& seq)
 void Plotter::DrawSequenceHistogram(const std::vector<DataSequence>& seq)
 {
   size_t vec_size
-      = std::min((unsigned)log->x, log->buffer_size);
+      = (std::min)((unsigned)log->x, log->buffer_size);
   int idx_subtract
-      = std::max(0,(int)(log->x)-(int)(log->buffer_size));
+      = (std::max)(0,(int)(log->x)-(int)(log->buffer_size));
   vector<float> accum_vec(vec_size,0);
 
   for(int s=log->sequences.size()-1; s >=0; --s )
@@ -261,8 +261,8 @@ void Plotter::DrawSequenceHistogram(const std::vector<DataSequence>& seq)
 
       const int seqint_x[2] = {seq.at(s).firstn, seq.at(s).n };
       const int valid_int_x[2] = {
-        std::max(seqint_x[0],(int)int_x[0]),
-        std::min(seqint_x[1],(int)int_x[1])
+        (std::max)(seqint_x[0],(int)int_x[0]),
+        (std::min)(seqint_x[1],(int)int_x[1])
       };
 
 
@@ -460,14 +460,14 @@ void Plotter::Keyboard(View&, unsigned char key, int x, int y, bool pressed)
         int_y[0] = log->sequences[1].min_y;
         int_y[1] = log->sequences[1].max_y;
       }else{
-        float min_y = numeric_limits<float>::max();
-        float max_y = numeric_limits<float>::min();
+        float min_y = (numeric_limits<float>::max)();
+        float max_y = (numeric_limits<float>::min)();
         for( unsigned int i=0; i<log->sequences.size(); ++i )
         {
           if( i>=show_n || show[i] )
           {
-            min_y = std::min(min_y,log->sequences[i].min_y);
-            max_y = std::max(max_y,log->sequences[i].max_y);
+            min_y = (std::min)(min_y,log->sequences[i].min_y);
+            max_y = (std::max)(max_y,log->sequences[i].max_y);
           }
         }
         if( min_y < max_y )

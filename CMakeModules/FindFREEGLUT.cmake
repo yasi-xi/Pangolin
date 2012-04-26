@@ -4,23 +4,38 @@
 # FREEGLUT_LIBRARY
 # FREEGLUT_FOUND
 
-FIND_PATH(
-  FREEGLUT_INCLUDE_DIR GL/freeglut.h
-  ${CMAKE_INCLUDE_PATH}
-  $ENV{include}
-  ${OPENGL_INCLUDE_DIR}
-  /usr/include
-  /usr/local/include
-)
-FIND_LIBRARY(
-  FREEGLUT_LIBRARY
-  NAMES freeglut_static freeglut glut
-  PATH
-    ${CMAKE_LIBRARY_PATH}
-    $ENV{lib}
-    /usr/lib
-    /usr/local/lib
-)
+IF(WIN32)
+
+   FIND_PATH( FREEGLUT_INCLUDE_DIR GL/freeglut.h
+      ../dependences/FREEGLUT/include
+      DOC "The directory where GL/freeflut.h resides")
+   FIND_LIBRARY( FREEGLUT_LIBRARY
+      NAMES freeglut_static freeglut glut
+      PATHS
+      ../dependences/FREEGLUT/lib
+      DOC "The FREEGLUT library")
+   
+ELSE(WIN32)
+
+   FIND_PATH(
+      FREEGLUT_INCLUDE_DIR GL/freeglut.h
+      ${CMAKE_INCLUDE_PATH}
+      $ENV{include}
+      ${OPENGL_INCLUDE_DIR}
+      /usr/include
+      /usr/local/include)
+
+   FIND_LIBRARY(
+      FREEGLUT_LIBRARY
+      NAMES freeglut_static freeglut glut
+      PATH
+      ${CMAKE_LIBRARY_PATH}
+      $ENV{lib}
+      /usr/lib
+      /usr/local/lib)
+
+
+ENDIF(WIN32)
 
 IF (FREEGLUT_INCLUDE_DIR AND FREEGLUT_LIBRARY)
    SET(FREEGLUT_FOUND TRUE)

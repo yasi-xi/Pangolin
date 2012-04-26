@@ -32,10 +32,14 @@
 
 #ifdef _WIN_
 #include <Windows.h>
-#endif
-
+#include <GL/glew.h>
+#include <GL/GL.h>
+#include <GL/GLU.h>
+#else
 #include <GL/glew.h>
 #include <GL/gl.h>
+#endif
+
 
 #include <math.h>
 

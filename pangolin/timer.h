@@ -98,17 +98,17 @@ inline double TimeDiff_s(basetime start, basetime end)
 
 inline basetime TimeFromSeconds(double seconds)
 {
-    LARGE_INTEGER f;
+    LARGE_INTEGER f; 
     QueryPerformanceFrequency(&f);
     basetime t;
-    t.QuadPart = (seconds * f);
+    t.QuadPart = (seconds * f.QuadPart);
     return t;
 }
 
 inline basetime TimeAdd(basetime t1, basetime t2)
 {
     basetime t;
-    t.QuadPart t1.QuadPart + t2.QuadPart;
+    t.QuadPart = t1.QuadPart + t2.QuadPart;
     return t;
 }
 #endif

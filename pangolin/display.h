@@ -34,6 +34,7 @@
 #include <map>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #ifdef HAVE_GLUT
 #include <GL/freeglut_std.h>
@@ -48,9 +49,11 @@
 
 #ifdef _WIN_
 #include <Windows.h>
-#endif
-
+#include <GL/GL.h>
+#include <GL/GLU.h>
+#else
 #include <GL/gl.h>
+#endif
 
 #define GLUT_KEY_ESCAPE 27
 #define GLUT_KEY_TAB 9

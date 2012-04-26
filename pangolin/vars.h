@@ -257,7 +257,7 @@ inline void Var<T>::Init(const std::string& name,
       da = new _Accessor<T,bool>( *(bool*)var->val_default );
     }else if( boost::is_integral<T>::value ) {
       var->create(new int, new int, typeid(int).name() );
-      var->meta_increment = std::max(1.0,default_increment);
+      var->meta_increment = (std::max)(1.0,default_increment);
       a = new _Accessor<T,int>( *(int*)var->val );
       da = new _Accessor<T,int>( *(int*)var->val_default );
     }else if( boost::is_scalar<T>::value ) {
