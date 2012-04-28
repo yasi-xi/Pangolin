@@ -4,18 +4,27 @@
 # FREEGLUT_LIBRARY
 # FREEGLUT_FOUND
 
-IF(WIN32)
+IF(MSVC)
 
    FIND_PATH( FREEGLUT_INCLUDE_DIR GL/freeglut.h
-      ../dependences/FREEGLUT/include
+      ../MSVC_LIBS/FREEGLUT/include
       DOC "The directory where GL/freeflut.h resides")
-   FIND_LIBRARY( FREEGLUT_LIBRARY
-      NAMES freeglut_static freeglut glut
-      PATHS
-      ../dependences/FREEGLUT/lib
-      DOC "The FREEGLUT library")
    
-ELSE(WIN32)
+   IF(CMAKE_CL_64) 
+      FIND_LIBRARY( FREEGLUT_LIBRARY
+         NAMES freeglut_static
+         PATHS
+         ../MSVC_LIBS/freeglut/lib/x64
+         DOC "The FREEGLUT library")
+   ELSE(CMAKE_CL_64)
+      FIND_LIBRARY( FREEGLUT_LIBRARY
+         NAMES freeglut_static
+         PATHS
+         ../MSVC_LIBS/freeglut/lib/x86
+         DOC "The FREEGLUT library")
+   ENDIF(CMAKE_CL_64)
+   
+ELSE(MSVC)
 
    FIND_PATH(
       FREEGLUT_INCLUDE_DIR GL/freeglut.h
@@ -35,7 +44,7 @@ ELSE(WIN32)
       /usr/local/lib)
 
 
-ENDIF(WIN32)
+ENDIF(MSVC)
 
 IF (FREEGLUT_INCLUDE_DIR AND FREEGLUT_LIBRARY)
    SET(FREEGLUT_FOUND TRUE)

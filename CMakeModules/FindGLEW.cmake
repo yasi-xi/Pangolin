@@ -7,23 +7,16 @@
 # GLEW_LIBRARY
 # 
 
-IF (WIN32)
+IF(MSVC)
 	FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
-		$ENV{PROGRAMFILES}/GLEW/include
-		$ENV{ProgramW6432}/GLEW/include
-                ../dependences/GLEW/include
-		${PROJECT_SOURCE_DIR}/src/nvgl/glew/include
+                ../MSVC_LIBS/GLEW/include
 		DOC "The directory where GL/glew.h resides")
 	FIND_LIBRARY( GLEW_LIBRARY
 		NAMES glew GLEW glew32 glew32s
 		PATHS
-		$ENV{PROGRAMFILES}/GLEW/lib
-		$ENV{ProgramW6432}/GLEW/lib
-                ../dependences/GLEW/lib
-		${PROJECT_SOURCE_DIR}/src/nvgl/glew/bin
-		${PROJECT_SOURCE_DIR}/src/nvgl/glew/lib
+                ../MSVC_LIBS/GLEW/lib
 		DOC "The GLEW library")
-ELSE (WIN32)
+ELSE(MSVC)
 	FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
 		/usr/include
 		/usr/local/include
@@ -40,7 +33,7 @@ ELSE (WIN32)
 		/sw/lib
 		/opt/local/lib
 		DOC "The GLEW library")
-ENDIF (WIN32)
+ENDIF(MSVC)
 
 IF (GLEW_INCLUDE_DIR AND GLEW_LIBRARY)
     SET( GLEW_FOUND TRUE)

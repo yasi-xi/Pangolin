@@ -7,7 +7,14 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/"
 
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
 
-# SET(BUILD_SHARED_LIBS ON)
+# Allow the developer to select if Dynamic or Static libraries are built
+OPTION (BUILD_SHARED_LIB "Build As A Shared Library" OFF)
+# Set the LIB_TYPE variable to STATIC
+SET (LIB_TYPE STATIC)
+IF (BUILD_SHARED_LIB)
+  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
+  SET (LIB_TYPE SHARED)
+ENDIF (BUILD_SHARED_LIB)
 
 # Overide with cmake -DCMAKE_BUILD_TYPE=Debug {dir}
 IF( NOT CMAKE_BUILD_TYPE )
@@ -18,6 +25,8 @@ ENDIF()
 
 # Platform configuration vars
 INCLUDE(SetPlatformVars)
+INCLUDE(GenerateExportHeader)
+
 
 STRING(TOLOWER ${PROJECT_NAME} LIBRARY_NAME)
 

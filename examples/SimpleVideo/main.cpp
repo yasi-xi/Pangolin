@@ -60,8 +60,8 @@ int main( int argc, char* argv[] )
         ""
     };
 
-    if( argc > 1 ) {
-        const string uri = std::string(argv[1]);
+    if( 1 ) {
+        const string uri = std::string("20120414001451.jpg");
         VideoSample(uri);
     }else{
         cout << "Usage  : SimpleRecord [video-uri]" << endl << endl;

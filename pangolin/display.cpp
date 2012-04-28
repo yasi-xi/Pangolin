@@ -252,6 +252,7 @@ namespace pangolin
   }
 
 #ifdef HAVE_GLUT
+
   void TakeGlutCallbacks()
   {
     glutKeyboardFunc(&process::Keyboard);
@@ -277,14 +278,13 @@ namespace pangolin
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
     context->is_double_buffered = mode & GLUT_DOUBLE;
     TakeGlutCallbacks();
-
-
   }    
 
   userDefinedRoutine r;  
   userDefinedSpecialFunc sf;
 
-  void pangolinRoutine(){
+  void pangolinRoutine()
+  {
 
       // Render our UI panel when we receive input
       if(HadInput()){
@@ -301,7 +301,8 @@ namespace pangolin
           glutLeaveMainLoop();
   }
 
-  void pangolinSpecialKeyFunction(int key, int x, int y){
+  void pangolinSpecialKeyFunction(int key, int x, int y)
+  {
 
       context->had_input = context->is_double_buffered ? 2 : 1;
       sf(key, x, y);
@@ -316,7 +317,8 @@ namespace pangolin
 
   }
 
-  void runPangolin(void (*pt2Function)()){
+  void runPangolin(void (*pt2Function)())
+  {
 
       r = pt2Function;
 
@@ -325,18 +327,14 @@ namespace pangolin
       glClearColor(0.0, 0.0, 0.0, 1.0);
 
       glutDisplayFunc(pangolinRoutine);      
-      glutTimerFunc(0, timerFunction, 1);
-
-      // Overwrite glut keyboard function
-
-
-      // Default hooks for exiting (Esc) and fullscreen (tab).
+      glutTimerFunc(0, timerFunction, 0);
       glutMainLoop();
 
   }
 
-  void timerFunction(int arg){
-      glutTimerFunc(10, timerFunction, 1);
+  void timerFunction(int arg)
+  {
+      glutTimerFunc(1, timerFunction, arg+1);
       glutPostRedisplay();
   }
 
