@@ -8,10 +8,10 @@ IF(MSVC)
 # Find header files
 FIND_PATH(
   FFMPEG_INCLUDE_DIR libavcodec/avcodec.h 
-		      libavformat/avformat.h 
-		      libavutil/avutil.h 
-		      libavutil/pixdesc.h
-		      libswscale/swscale.h
+		     libavformat/avformat.h 
+		     libavutil/avutil.h 
+		     libavutil/pixdesc.h
+		     libswscale/swscale.h
   ../MSVC_LIBS/FFMPEG/include
 )
 

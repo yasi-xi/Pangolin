@@ -7,21 +7,21 @@
 IF(MSVC)
 
    FIND_PATH( FREEGLUT_INCLUDE_DIR GL/freeglut.h
-      ../MSVC_LIBS/FREEGLUT/include
+      $ENV{PROGRAMFILES}/FREEGLUT/include
       DOC "The directory where GL/freeflut.h resides")
    
    IF(CMAKE_CL_64) 
       FIND_LIBRARY( FREEGLUT_LIBRARY
          NAMES freeglut_static
          PATHS
-         ../MSVC_LIBS/freeglut/lib/x64
-         DOC "The FREEGLUT library")
+         $ENV{ProgramW6432}/FREEGLUT/lib/x64
+         DOC "The FREEGLUT 64-bit library")
    ELSE(CMAKE_CL_64)
       FIND_LIBRARY( FREEGLUT_LIBRARY
          NAMES freeglut_static
          PATHS
-         ../MSVC_LIBS/freeglut/lib/x86
-         DOC "The FREEGLUT library")
+         $ENV{PROGRAMFILES}/FREEGLUT/lib/x86
+         DOC "The FREEGLUT 32-bit library")
    ENDIF(CMAKE_CL_64)
    
 ELSE(MSVC)
