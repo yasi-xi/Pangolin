@@ -33,9 +33,6 @@ FIND_PACKAGE(FREEGLUT REQUIRED)
 IF(FREEGLUT_FOUND)
    SET(HAVE_GLUT 1)
    MESSAGE(STATUS "Freeglut Found and Enabled")
-   IF(MSVC)
-      ADD_DEFINITIONS(-DFREEGLUT_STATIC)
-   ENDIF(MSVC)
 ENDIF(FREEGLUT_FOUND)
 
 IF(GLEW_FOUND)
@@ -106,12 +103,26 @@ ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations -Werror")
 ENDIF(MSVC)
 
+IF(MSVC)
+   SET(Boost_USE_STATIC_LIBS ON)
+   SET(Boost_USE_STATIC_RUNTIME ON)
+   ADD_DEFINITIONS(-DFREEGLUT_STATIC)
+   #We statically link to reduce dependancies
+   FOREACH(flag_var
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+      IF(${flag_var} MATCHES "/MD")
+         string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+      ENDIF(${flag_var} MATCHES "/MD")
+   ENDFOREACH(flag_var)
+ENDIF(MSVC)
+
 #######################################################
 ## Create configure file for inclusion in library
 
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/config.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/config.h"
 )
 INCLUDE_DIRECTORIES("${PROJECT_BINARY_DIR}")
 
