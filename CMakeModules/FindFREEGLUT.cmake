@@ -9,7 +9,9 @@ IF(MSVC)
    FIND_PATH( FREEGLUT_INCLUDE_DIR GL/freeglut.h
       $ENV{PROGRAMFILES}/FREEGLUT/include
       DOC "The directory where GL/freeflut.h resides")
-   
+
+   ADD_DEFINITIONS(-DFREEGLUT_STATIC)
+
    IF(CMAKE_CL_64) 
       FIND_LIBRARY( FREEGLUT_LIBRARY
          NAMES freeglut_static

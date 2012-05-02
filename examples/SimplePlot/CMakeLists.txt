@@ -24,6 +24,5 @@ IF(FREEGLUT_FOUND AND Boost_FOUND)
   TARGET_LINK_LIBRARIES(
     SimplePlot
     ${LIBRARY_NAME}
-    ${Boost_LIBRARIES}
   )
 ENDIF()
