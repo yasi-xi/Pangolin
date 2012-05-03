@@ -10,7 +10,7 @@ IF(MSVC)
       $ENV{PROGRAMFILES}/FREEGLUT/include
       DOC "The directory where GL/freeflut.h resides")
 
-   IF(BUILD_SHARED_LIB)
+   IF(BUILD_SHARED_LIB OR USE_SHARED_LIB)
       IF(CMAKE_CL_64) 
          FIND_LIBRARY( FREEGLUT_LIBRARY
             NAMES freeglut
@@ -24,7 +24,7 @@ IF(MSVC)
             $ENV{PROGRAMFILES}/FREEGLUT/lib/x86
             DOC "The FREEGLUT 32-bit library")
       ENDIF(CMAKE_CL_64)
-   ELSE(BUILD_SHARED_LIB)
+   ELSE(BUILD_SHARED_LIB OR USE_SHARED_LIB)
       IF(CMAKE_CL_64) 
          FIND_LIBRARY( FREEGLUT_LIBRARY
             NAMES freeglut_static
@@ -38,7 +38,7 @@ IF(MSVC)
             $ENV{PROGRAMFILES}/FREEGLUT/lib/x86
             DOC "The FREEGLUT 32-bit library")
       ENDIF(CMAKE_CL_64)
-   ENDIF(BUILD_SHARED_LIB)
+   ENDIF(BUILD_SHARED_LIB OR USE_SHARED_LIB)
    
 ELSE(MSVC)
 
