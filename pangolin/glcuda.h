@@ -49,7 +49,7 @@ enum GlBufferType
   GlPixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER
 };
 
-struct GlBufferCudaPtr
+LIBRARY_API struct GlBufferCudaPtr
 {
   GlBufferCudaPtr(GlBufferType buffer_type, GLsizeiptr size_bytes, unsigned int cudause = cudaGraphicsMapFlagsNone, GLenum gluse = GL_DYNAMIC_DRAW );
   ~GlBufferCudaPtr();
@@ -61,14 +61,14 @@ struct GlBufferCudaPtr
   GlBufferType buffer_type;
 };
 
-struct GlTextureCudaArray : GlTexture
+LIBRARY_API struct GlTextureCudaArray : GlTexture
 {
   GlTextureCudaArray(int width, int height, GLint internal_format);
   ~GlTextureCudaArray();
   cudaGraphicsResource* cuda_res;
 };
 
-struct CudaScopedMappedPtr
+LIBRARY_API struct CudaScopedMappedPtr
 {
   CudaScopedMappedPtr(GlBufferCudaPtr& buffer);
   ~CudaScopedMappedPtr();
@@ -76,7 +76,7 @@ struct CudaScopedMappedPtr
   cudaGraphicsResource* res;
 };
 
-struct CudaScopedMappedArray
+LIBRARY_API struct CudaScopedMappedArray
 {
   CudaScopedMappedArray(GlTextureCudaArray& tex);
   ~CudaScopedMappedArray();
@@ -84,9 +84,9 @@ struct CudaScopedMappedArray
   cudaGraphicsResource* res;
 };
 
-void CopyPboToTex(GlBufferCudaPtr& buffer, GlTexture& tex);
+LIBRARY_API void CopyPboToTex(GlBufferCudaPtr& buffer, GlTexture& tex);
 
-void swap(GlBufferCudaPtr& a, GlBufferCudaPtr& b);
+LIBRARY_API void swap(GlBufferCudaPtr& a, GlBufferCudaPtr& b);
 
 ////////////////////////////////////////////////
 // Implementation

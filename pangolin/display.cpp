@@ -280,63 +280,63 @@ namespace pangolin
     TakeGlutCallbacks();
   }    
 
-  userDefinedRoutine r;  
-  userDefinedSpecialFunc sf;
+  //userDefinedRoutine r;  
+  //userDefinedSpecialFunc sf;
 
-  void pangolinRoutine()
-  {
+  //void pangolinRoutine()
+  //{
 
-      // Render our UI panel when we receive input
-      if(HadInput()){
+  //    // Render our UI panel when we receive input
+  //    if(HadInput()){
 
-          if(HasResized())
-              DisplayBase().ActivateScissorAndClear();          
+  //        if(HasResized())
+  //            DisplayBase().ActivateScissorAndClear();          
 
-          r();
+  //        r();
 
-          glutSwapBuffers();
-      }
+  //        glutSwapBuffers();
+  //    }
 
-      if(pangolin::ShouldQuit())
-          glutLeaveMainLoop();
-  }
+  //    if(pangolin::ShouldQuit())
+  //        glutLeaveMainLoop();
+  //}
 
-  void pangolinSpecialKeyFunction(int key, int x, int y)
-  {
+  //void pangolinSpecialKeyFunction(int key, int x, int y)
+  //{
 
-      context->had_input = context->is_double_buffered ? 2 : 1;
-      sf(key, x, y);
+  //    context->had_input = context->is_double_buffered ? 2 : 1;
+  //    sf(key, x, y);
 
-  }
+  //}
 
 
-  void specialKeyBindPangolin(void (*pt2Function)(int, int, int)){
+  //void specialKeyBindPangolin(void (*pt2Function)(int, int, int)){
 
-      sf = pt2Function;
-      glutSpecialFunc(pangolinSpecialKeyFunction);
+  //    sf = pt2Function;
+  //    glutSpecialFunc(pangolinSpecialKeyFunction);
 
-  }
+  //}
 
-  void runPangolin(void (*pt2Function)())
-  {
+  //void runPangolin(void (*pt2Function)())
+  //{
 
-      r = pt2Function;
+  //    r = pt2Function;
 
-      glEnable (GL_BLEND);
-      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glClearColor(0.0, 0.0, 0.0, 1.0);
+  //    glEnable (GL_BLEND);
+  //    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //    glClearColor(0.0, 0.0, 0.0, 1.0);
 
-      glutDisplayFunc(pangolinRoutine);      
-      glutTimerFunc(0, timerFunction, 0);
-      glutMainLoop();
+  //    glutDisplayFunc(pangolinRoutine);      
+  //    glutTimerFunc(0, timerFunction, 0);
+  //    glutMainLoop();
 
-  }
+  //}
 
-  void timerFunction(int arg)
-  {
-      glutTimerFunc(1, timerFunction, arg+1);
-      glutPostRedisplay();
-  }
+  //void timerFunction(int arg)
+  //{
+  //    glutTimerFunc(1, timerFunction, arg+1);
+  //    glutPostRedisplay();
+  //}
 
 #endif
 

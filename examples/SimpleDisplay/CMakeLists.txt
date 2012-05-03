@@ -7,16 +7,16 @@ LINK_DIRECTORIES(${PROJECT_BINARY_DIR})
 FIND_PACKAGE(FREEGLUT QUIET)
 FIND_PACKAGE(Boost QUIET)
 
-IF(MSVC)
+#IF(MSVC)
 #We statically link to reduce dependancies
-FOREACH(flag_var
-        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-   IF(${flag_var} MATCHES "/MD")
-      string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-   ENDIF(${flag_var} MATCHES "/MD")
-ENDFOREACH(flag_var)
-ENDIF(MSVC)
+#FOREACH(flag_var
+#        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+#        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+#   IF(${flag_var} MATCHES "/MD")
+#      string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+#   ENDIF(${flag_var} MATCHES "/MD")
+#ENDFOREACH(flag_var)
+#ENDIF(MSVC)
 
 IF(FREEGLUT_FOUND)
   ADD_EXECUTABLE(SimpleDisplay main.cpp)

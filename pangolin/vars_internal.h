@@ -163,9 +163,6 @@ struct _Var
     }
   }
 
-
-
-
   void* val;
   void* val_default;
 

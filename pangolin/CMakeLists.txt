@@ -34,7 +34,9 @@ IF(FREEGLUT_FOUND)
    SET(HAVE_GLUT 1)
    MESSAGE(STATUS "Freeglut Found and Enabled")
    IF(MSVC)
-      ADD_DEFINITIONS(-DFREEGLUT_STATIC)
+      IF(NOT BUILD_SHARED_LIB)
+         ADD_DEFINITIONS(-DFREEGLUT_STATIC)
+      ENDIF(NOT BUILD_SHARED_LIB)
    ENDIF(MSVC)
 ENDIF(FREEGLUT_FOUND)
 
@@ -106,12 +108,18 @@ ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations -Werror")
 ENDIF(MSVC)
 
+# Set Microsoft Visual C++ parameters
+IF(MSVC)
+   SET(CMAKE_DEBUG_POSTFIX "d")
+   ADD_DEFINITIONS(-DLIBRARY_EXPORTS)
+ENDIF(MSVC)
+
 #######################################################
 ## Create configure file for inclusion in library
 
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/config.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/config.h"
 )
 INCLUDE_DIRECTORIES("${PROJECT_BINARY_DIR}")
 
