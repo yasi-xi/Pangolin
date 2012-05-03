@@ -50,7 +50,7 @@ namespace pangolin
 // Interface
 ////////////////////////////////////////////////
 
-struct GlTexture
+struct LIBRARY_API GlTexture
 {
   GlTexture(GLint width, GLint height, GLint internal_format = GL_RGBA8 );
   ~GlTexture();
@@ -72,7 +72,7 @@ struct GlTexture
   GLint height;
 };
 
-struct GlRenderBuffer
+struct LIBRARY_API GlRenderBuffer
 {
   GlRenderBuffer(GLint width, GLint height, GLint internal_format = GL_DEPTH_COMPONENT24);
   ~GlRenderBuffer();
@@ -80,7 +80,7 @@ struct GlRenderBuffer
   GLuint rbid;
 };
 
-struct GlFramebuffer
+struct LIBRARY_API GlFramebuffer
 {
   GlFramebuffer();
   GlFramebuffer(GlTexture& colour, GlRenderBuffer& depth);
@@ -94,9 +94,9 @@ struct GlFramebuffer
   unsigned attachments;
 };
 
-void glColorHSV( double hue, double s, double v );
+LIBRARY_API void glColorHSV( double hue, double s, double v );
 
-void glColorBin( int bin, int max_bins, double sat = 1.0, double val = 1.0 );
+LIBRARY_API void glColorBin( int bin, int max_bins, double sat = 1.0, double val = 1.0 );
 
 
 ////////////////////////////////////////////////

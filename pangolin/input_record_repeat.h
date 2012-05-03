@@ -45,7 +45,7 @@ struct FrameInput
     std::string val;
 };
 
-struct InputRecordRepeat
+struct LIBRARY_API InputRecordRepeat
 {
     InputRecordRepeat(const std::string& var_record_prefix);
     ~InputRecordRepeat();

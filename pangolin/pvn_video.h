@@ -36,7 +36,7 @@
 namespace pangolin
 {
 
-struct VideoStream
+struct LIBRARY_API VideoStream
 {
     std::string name;
     VideoPixelFormat fmt;
@@ -44,7 +44,7 @@ struct VideoStream
     size_t frame_size_bytes;
 };
 
-class PvnVideo : public VideoInterface
+class LIBRARY_API PvnVideo : public VideoInterface
 {
 public:
     PvnVideo(const char* filename, bool realtime = false);

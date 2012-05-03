@@ -8,7 +8,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/"
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
 
 # Allow the developer to select if Dynamic or Static libraries are built
-OPTION (BUILD_SHARED_LIB "Build As A Shared Library" OFF)
+OPTION (BUILD_SHARED_LIB "Build As A Shared Library" ON)
 # Set the LIB_TYPE variable to STATIC
 SET(LIB_TYPE STATIC)
 IF(BUILD_SHARED_LIB)
@@ -30,6 +30,12 @@ INCLUDE(GenerateExportHeader)
 
 STRING(TOLOWER ${PROJECT_NAME} LIBRARY_NAME)
 SET(CMAKE_DEBUG_POSTFIX "d")
+
+# Set Microsoft Visual C++ parameters
+IF(MSVC)
+   
+   ADD_DEFINITIONS(-DLIBRARY_EXPORTS)
+ENDIF(MSVC)
 
 # make an uninstall target
 CONFIGURE_FILE(

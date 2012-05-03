@@ -50,7 +50,7 @@ extern "C"
 namespace pangolin
 {
 
-class FfmpegVideo : public VideoInterface
+class LIBRARY_API FfmpegVideo : public VideoInterface
 {
 public:
     FfmpegVideo(const std::string filename, const std::string fmtout = "RGB24", const std::string codec_hint = "");
@@ -106,7 +106,7 @@ enum FfmpegMethod
     FFMPEG_SPLINE        =0x400
 };
 
-class FfmpegConverter : public VideoInterface
+class LIBRARY_API FfmpegConverter : public VideoInterface
 {
 public:
     FfmpegConverter(VideoInterface* videoin, const std::string pixelfmtout = "RGB24", FfmpegMethod method = FFMPEG_POINT);

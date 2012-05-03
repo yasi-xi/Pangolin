@@ -58,7 +58,7 @@
 
 namespace pangolin
 {
-    struct VideoException : std::exception
+    struct LIBRARY_API VideoException : std::exception
     {
         VideoException(std::string str) : desc(str) {}
         VideoException(std::string str, std::string detail) {
@@ -69,7 +69,7 @@ namespace pangolin
         std::string desc;
     };
 
-    struct VideoPixelFormat
+    struct LIBRARY_API VideoPixelFormat
     {
         std::string format;
         unsigned int channels;
@@ -80,10 +80,10 @@ namespace pangolin
 
     //! Return Pixel Format properties given string specification in
     //! FFMPEG notation.
-    VideoPixelFormat VideoFormatFromString(const std::string& format);
+    LIBRARY_API VideoPixelFormat VideoFormatFromString(const std::string& format);
 
     //! Interface to video capture sources
-    struct VideoInterface
+    struct LIBRARY_API VideoInterface
     {
         virtual ~VideoInterface() {}
         virtual unsigned Width() const = 0;
@@ -107,7 +107,7 @@ namespace pangolin
         virtual bool GrabNewest( unsigned char* image, bool wait = true ) = 0;
     };
 
-    struct VideoInput : public VideoInterface
+    struct LIBRARY_API VideoInput : public VideoInterface
     {
         VideoInput();
         VideoInput(std::string uri);
@@ -131,7 +131,7 @@ namespace pangolin
         VideoInterface* video;
     };
 
-    VideoInterface* OpenVideo(std::string uri);
+    LIBRARY_API VideoInterface* OpenVideo(std::string uri);
 
 }
 

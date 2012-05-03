@@ -38,6 +38,7 @@
 #include <fstream>
 
 #include "vars_internal.h"
+#include "platform.h"
 
 namespace pangolin
 {
@@ -80,15 +81,15 @@ struct Var
   Accessor<T>* a;
 };
 
-bool Pushed(Var<bool>& button);
+LIBRARY_API bool Pushed(Var<bool>& button);
 
-void ParseVarsFile(const std::string& filename);
+LIBRARY_API void ParseVarsFile(const std::string& filename);
 
 typedef void (*NewVarCallbackFn)(void* data, const std::string& name, _Var& var, const char* reg_type_name, bool brand_new);
-void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter = "");
+LIBRARY_API void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter = "");
 
 typedef void (*GuiVarChangedCallbackFn)(void* data, const std::string& name, _Var& var);
-void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
+LIBRARY_API void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
 
 template<typename T>
 T FromFile( const std::string& filename, const T& init = T());
@@ -176,7 +177,7 @@ inline void Var<T>::operator=(const Var<T>& v)
 }
 
 
-struct NewVarCallback
+struct LIBRARY_API NewVarCallback
 {
   NewVarCallback(const std::string& filter, NewVarCallbackFn fn, void* data)
     :filter(filter),fn(fn),data(data) {}
@@ -185,7 +186,7 @@ struct NewVarCallback
   void* data;
 };
 
-struct GuiVarChangedCallback
+struct LIBRARY_API GuiVarChangedCallback
 {
   GuiVarChangedCallback(const std::string& filter, GuiVarChangedCallbackFn fn, void* data)
     :filter(filter),fn(fn),data(data) {}
@@ -194,9 +195,9 @@ struct GuiVarChangedCallback
   void* data;
 };
 
-extern boost::ptr_unordered_map<std::string,_Var> vars;
-extern std::vector<NewVarCallback> new_var_callbacks;
-extern std::vector<GuiVarChangedCallback> gui_var_changed_callbacks;
+LIBRARY_API extern boost::ptr_unordered_map<std::string,_Var> vars;
+LIBRARY_API extern std::vector<NewVarCallback> new_var_callbacks;
+LIBRARY_API extern std::vector<GuiVarChangedCallback> gui_var_changed_callbacks;
 
 template<typename T>
 inline void Var<T>::Init(const std::string& name,
@@ -217,7 +218,7 @@ inline void Var<T>::Init(const std::string& name,
     // found
     var = vi->second;
     a = Accessor<T>::Create(var->type_name,var->val);
-    if( var->generic && var->type_name != typeid(T).name() )
+    if( var->generic && strcmp(var->type_name, typeid(T).name()) != 0 )
     {
       // re-specialise this variable
       //      std::cout << "Specialising " << name << std::endl;
@@ -243,7 +244,7 @@ inline void Var<T>::Init(const std::string& name,
   }
 
   // Create var of base type T
-  {
+  
     var = &vars[name];
 
     const double range = max - min;
@@ -292,8 +293,8 @@ inline void Var<T>::Init(const std::string& name,
     // notify those watching new variables
     BOOST_FOREACH(NewVarCallback& nvc, new_var_callbacks)
         if( boost::starts_with(name,nvc.filter) )
-        nvc.fn(nvc.data,name,*var, typeid(T).name(), true);
-  }
+			nvc.fn(nvc.data,name,*var, typeid(T).name(), true);
+
 }
 
 inline void ProcessHistoricCallbacks(NewVarCallbackFn callback, void* data, const std::string& filter)

@@ -122,7 +122,7 @@ inline basetime WaitUntil(basetime t)
     return currtime;
 }
 
-struct Timer
+struct LIBRARY_API Timer
 {
     Timer() {
         Reset();

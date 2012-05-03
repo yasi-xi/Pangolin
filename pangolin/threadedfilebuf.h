@@ -36,10 +36,12 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 
+#include "platform.h"
+
 namespace pangolin
 {
 
-class threadedfilebuf : public std::streambuf
+class LIBRARY_API threadedfilebuf : public std::streambuf
 {
 public:
     threadedfilebuf(const std::string& filename, unsigned int buffer_size_bytes);
