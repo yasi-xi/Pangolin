@@ -65,6 +65,7 @@ namespace pangolin
 
 		void RenderToViewport() const;
 		void RenderToViewportFlipY() const;
+		void RenderPlanTexture3D(float width, float height) const;
 
 		GLint internal_format;
 		GLuint tid;
@@ -175,8 +176,6 @@ namespace pangolin
 		Unbind();
 	}
 
-
-
 	inline void GlTexture::RenderToViewport() const
 	{
 		glMatrixMode(GL_PROJECTION);
@@ -215,6 +214,19 @@ namespace pangolin
 		glVertex2d(1,-1);
 		glTexCoord2f(0, 1);
 		glVertex2d(-1,-1);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	inline void GlTexture::RenderPlanTexture3D(float width, float height) const
+	{
+		Bind();
+		glEnable(GL_TEXTURE_2D);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
+		glTexCoord2f(0.0, 1.0); glVertex3f(0.0, height, 0.0);
+		glTexCoord2f(1.0, 1.0); glVertex3f(width, height, 0.0);
+		glTexCoord2f(1.0, 0.0); glVertex3f(width, 0.0, 0.0);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
