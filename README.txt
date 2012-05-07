@@ -18,5 +18,5 @@ Known bugs:
 
 1. Typeid(class).name() comparison errors (fixed).
 
-2. glutFullScreen() doesn't behave correct with glutMainLoopEvet() but work fine with the non-return event loop glutMainLoop().
+2. glutFullScreen() doesn't behave correct with glutMainLoopEvet() but works fine with the non-return event loop glutMainLoop().
 
