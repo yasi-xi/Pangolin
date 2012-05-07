@@ -23,90 +23,6 @@ std::istream& operator>> (std::istream& is, CustomType& o){
 	return is;
 }
 
-//OpenGlRenderState s_cam;
-//View *d_cam;
-//View *d_panel;
-//
-////void timerFunction(int arg){ glutPostRedisplay();}
-//
-//void myRoutine(){
-//
-//	if(HasResized())
-//		DisplayBase().ActivateScissorAndClear();
-//
-//	// Safe and efficient binding of named variables.
-//	// Specialisations mean no conversions take place for exact types
-//	// and conversions between scalar types are cheap.
-//	static Var<bool> a_button("ui.A Button",false,false);
-//	static Var<double> a_double("ui.A Double",3,1,10000,true);
-//	static Var<int> an_int("ui.An Int",2,0,5);
-//	static Var<bool> a_checkbox("ui.A Checkbox",false,true);
-//	static Var<int> an_int_no_input("ui.An Int No Input",0);
-//	//static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
-//	static Var<double> aliased_double("ui.Aliased Double",3,0,10000);
-//	static Var<string> text_input("ui.text input", "echo");
-//
-//	if( Pushed(a_button) )
-//		cout << "You Pushed a button!" << endl;
-//
-//	// Overloading of Var<T> operators allows us to treat them like
-//	// their wrapped types, eg:
-//	if( a_checkbox )
-//		an_int = a_double;
-//
-//	//if( !any_type->z.compare("robot"))
-//	//	any_type = (CustomType){1,2.3,"Boogie"};
-//
-//	an_int_no_input = an_int;
-//
-//	// Activate efficiently by object
-//	// (3D Handler requires depth testing to be enabled)
-//	d_cam->ActivateScissorAndClear(s_cam);
-//	glEnable(GL_DEPTH_TEST);
-//	glColor3f(1.0,1.0,1.0);
-//
-//	// Render some stuffvoid
-//	glutWireTeapot(10.0);
-//
-//	d_panel->Render();
-//
-//}
-//
-//int main( int /*argc*/, char* argv[] )
-//{
-//	// Load configuration data
-//	//pangolin::ParseVarsFile("app.cfg");
-//
-//	// Create OpenGL window in single line thanks to GLUT
-//	pangolin::CreateGlutWindowAndBind("Main",640,480);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//	// Issue specific OpenGl we might need
-//	glEnable (GL_BLEND);
-//	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//	// Define Camera Render Object (for view / scene browsing)
-//	//  OpenGlRenderState s_cam;
-//	s_cam.Set(ProjectionMatrix(640,480,420,420,320,240,0.1,1000));
-//	s_cam.Set(IdentityMatrix(GlModelViewStack));
-//	
-//	const int UI_WIDTH = 180;
-//
-//	// Add named OpenGL viewport to window and provide 3D Handler
-//	d_cam = &pangolin::Display("cam")
-//		.SetBounds(1.0, 0.0, Attach::Pix(UI_WIDTH), 1.0, -640.0f/480.0f)
-//		.SetHandler(new Handler3D(s_cam));
-//
-//	// Add named Panel and bind to variables beginning 'ui'
-//	// A Panel is just a View with a default layout and input handling
-//	d_panel = &pangolin::CreatePanel("ui")
-//		.SetBounds(1.0, 0.0, 0, Attach::Pix(UI_WIDTH));
-//
-//	runPangolin(myRoutine);
-//
-//	return 0;
-//}
-
 int main( int /*argc*/, char* argv[] )
 {  
 	// Load configuration data
@@ -137,6 +53,7 @@ int main( int /*argc*/, char* argv[] )
 	View& d_panel = pangolin::CreatePanel("ui")
 		.SetBounds(0.0, 1.0, 0.0, Attach::Pix(UI_WIDTH));
 
+	
 	// Default hooks for exiting (Esc) and fullscreen (tab).
 	while( !pangolin::ShouldQuit() )
 	{
@@ -184,7 +101,105 @@ int main( int /*argc*/, char* argv[] )
 		// Swap frames and Process Events
 		glutSwapBuffers();
 		glutMainLoopEvent();
+		
 	}
 
 	return 0;
 }
+
+// Use glutMainLoop();
+
+//OpenGlRenderState s_cam;
+//View *d_cam;
+//View *d_panel;
+//
+//void myRoutine(){
+//
+//	if(HasResized())
+//		DisplayBase().ActivateScissorAndClear();
+//
+//	// Safe and efficient binding of named variables.
+//	// Specialisations mean no conversions take place for exact types
+//	// and conversions between scalar types are cheap.
+//	static Var<bool> a_button("ui.A Button",false,false);
+//	static Var<double> a_double("ui.A Double",3,1,10000,true);
+//	static Var<int> an_int("ui.An Int",2,0,5);
+//	static Var<bool> a_checkbox("ui.A Checkbox",false,true);
+//	static Var<int> an_int_no_input("ui.An Int No Input",0);
+//	//static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
+//	static Var<double> aliased_double("ui.Aliased Double",3,0,10000);
+//	static Var<string> text_input("ui.text input", "echo");
+//
+//	if( Pushed(a_button) )
+//		cout << "You Pushed a button!" << endl;
+//
+//	// Overloading of Var<T> operators allows us to treat them like
+//	// their wrapped types, eg:
+//	if( a_checkbox )
+//		an_int = a_double;
+//
+//	//if( !any_type->z.compare("robot"))
+//	//	any_type = (CustomType){1,2.3,"Boogie"};
+//
+//	an_int_no_input = an_int;
+//
+//	// Activate efficiently by object
+//	// (3D Handler requires depth testing to be enabled)
+//	d_cam->ActivateScissorAndClear(s_cam);
+//	glEnable(GL_DEPTH_TEST);
+//	glColor3f(1.0,1.0,1.0);
+//
+//	// Render some stuffvoid
+//	glutWireTeapot(10.0);
+//
+//	d_panel->Render();
+//
+//	glutSwapBuffers();
+//
+//	if(pangolin::ShouldQuit())
+//		glutLeaveMainLoop();
+//
+//}
+//
+//void timerFunction(int arg)
+//{
+//	glutTimerFunc(1, timerFunction, arg+1);
+//	glutPostRedisplay();
+//}
+//
+//int main( int /*argc*/, char* argv[] )
+//{
+//	// Load configuration data
+//	//pangolin::ParseVarsFile("app.cfg");
+//
+//	// Create OpenGL window in single line thanks to GLUT
+//	pangolin::CreateGlutWindowAndBind("Main",640,480);
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//	// Issue specific OpenGl we might need
+//	glEnable (GL_BLEND);
+//	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//
+//	// Define Camera Render Object (for view / scene browsing)
+//	//  OpenGlRenderState s_cam;
+//	s_cam.Set(ProjectionMatrix(640,480,420,420,320,240,0.1,1000));
+//	s_cam.Set(IdentityMatrix(GlModelViewStack));
+//
+//	const int UI_WIDTH = 180;
+//
+//	// Add named OpenGL viewport to window and provide 3D Handler
+//	d_cam = &pangolin::Display("cam")
+//		.SetBounds(1.0, 0.0, Attach::Pix(UI_WIDTH), 1.0, -640.0f/480.0f)
+//		.SetHandler(new Handler3D(s_cam));
+//
+//	// Add named Panel and bind to variables beginning 'ui'
+//	// A Panel is just a View with a default layout and input handling
+//	d_panel = &pangolin::CreatePanel("ui")
+//		.SetBounds(1.0, 0.0, 0, Attach::Pix(UI_WIDTH));
+//
+//	glutDisplayFunc(&myRoutine);
+//	glutTimerFunc(0, timerFunction, 0);
+//	glutMainLoop();
+//
+//	return 0;
+//}

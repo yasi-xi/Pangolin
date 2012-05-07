@@ -8,6 +8,15 @@ ui integration, and offers a simple mechanism for lightweight video input.
 
 == About this fork ==
 
-This is an attempt to make Pangolin compiled in Win32 using MinGW or even MSVC
+This fork attempts to make Pangolin compiled in Win32 using MSVC.
 
 For the original Pangolin, please refer to: https://github.com/stevenlovegrove/Pangolin
+
+=====================
+
+Known bugs:
+
+1. Typeid(class).name() comparison errors (fixed).
+
+2. glutFullScreen() doesn't behave correct with glutMainLoopEvet() but work fine with the non-return event loop glutMainLoop().
+
