@@ -89,11 +89,11 @@ namespace pangolin
 		return t;
 	}
 
-	inline double TimeDiff_s(basetime start, basetime end)
+	inline double TimeDiffInMicroSec(basetime start, basetime end)
 	{
 		LARGE_INTEGER f;
 		QueryPerformanceFrequency(&f);
-		return (end.QuadPart - start.QuadPart) / f.QuadPart;
+		return (end.QuadPart - start.QuadPart)*1000000.0 / f.QuadPart;
 	}
 
 	inline basetime TimeFromSeconds(double seconds)
@@ -117,7 +117,7 @@ namespace pangolin
 	{
 		// TODO: use smarter sleep!
 		basetime currtime = TimeNow();
-		while( TimeDiff_s(currtime,t) > 0 )
+		while(TimeDiffInMicroSec(currtime, t)*10e-6 > 0 )
 			currtime = TimeNow();
 		return currtime;
 	}
@@ -133,11 +133,24 @@ namespace pangolin
 			start = TimeNow();
 		}
 
-		double Elapsed_s()
+		double getElapsedTimeInMicroSec()
 		{
 			basetime currtime = TimeNow();
-			return TimeDiff_s(start,currtime);
+			return TimeDiffInMicroSec(start, currtime);
 		}
+
+		double getElapsedTimeInMilliSec()
+		{
+			basetime currtime = TimeNow();
+			return 0.001 * TimeDiffInMicroSec(start, currtime);
+		}
+
+		double getElapsedTimeInSec()
+		{
+			basetime currtime = TimeNow();
+			return 0.000001 * TimeDiffInMicroSec(start, currtime);
+		}
+
 
 		basetime start;
 	};
