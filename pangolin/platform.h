@@ -33,10 +33,10 @@
 #ifdef _MSVC_
 #define __thread __declspec(thread)
 
-#ifdef LIBRARY_EXPORTS
-#define LIBRARY_API __declspec(dllexport)
+#ifdef pangolin_EXPORTS
+#	define LIBRARY_API __declspec(dllexport)
 #else
-#define LIBRARY_API __declspec(dllimport)
+#	define LIBRARY_API __declspec(dllimport)
 #endif
 
 #endif //_MSVC_

@@ -90,12 +90,12 @@ IF(DC1394_FOUND)
   MESSAGE(STATUS "libdc1394 Found and Enabled")
 ENDIF()
 
-FIND_PACKAGE(TooN QUIET)
-IF(TooN_FOUND)
-  SET(HAVE_TOON 1)
-  INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${TooN_INCLUDE_DIR} )
-  MESSAGE(STATUS "TooN Found and Enabled")
-ENDIF()
+#FIND_PACKAGE(TooN QUIET)
+#IF(TooN_FOUND)
+#  SET(HAVE_TOON 1)
+#  INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${TooN_INCLUDE_DIR} )
+#  MESSAGE(STATUS "TooN Found and Enabled")
+#ENDIF()
 
 ## Apply required dependencies settings
 INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${GLEW_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${FREEGLUT_INCLUDE_DIR})
@@ -108,11 +108,6 @@ ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations -Werror")
 ENDIF(MSVC)
 
-# Set Microsoft Visual C++ parameters
-IF(MSVC)
-   SET(CMAKE_DEBUG_POSTFIX "d")
-   ADD_DEFINITIONS(-DLIBRARY_EXPORTS)
-ENDIF(MSVC)
 
 #######################################################
 ## Create configure file for inclusion in library

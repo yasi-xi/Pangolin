@@ -25,17 +25,9 @@ ENDIF()
 
 # Platform configuration vars
 INCLUDE(SetPlatformVars)
-INCLUDE(GenerateExportHeader)
-
 
 STRING(TOLOWER ${PROJECT_NAME} LIBRARY_NAME)
 SET(CMAKE_DEBUG_POSTFIX "d")
-
-# Set Microsoft Visual C++ parameters
-IF(MSVC)
-   
-   ADD_DEFINITIONS(-DLIBRARY_EXPORTS)
-ENDIF(MSVC)
 
 # make an uninstall target
 CONFIGURE_FILE(
