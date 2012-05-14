@@ -35,12 +35,12 @@
 namespace pangolin
 {
 
-	struct LIBRARY_API Plotter;
-	struct LIBRARY_API DataLog;
+	struct PANGOLIN_DLL Plotter;
+	struct PANGOLIN_DLL DataLog;
 
-	LIBRARY_API Plotter& CreatePlotter(const std::string& name, DataLog* log = 0);
+	PANGOLIN_DLL Plotter& CreatePlotter(const std::string& name, DataLog* log = 0);
 
-	struct LIBRARY_API DataUnavailableException : std::exception
+	struct PANGOLIN_DLL DataUnavailableException : std::exception
 	{
 		DataUnavailableException(std::string str) : desc(str) {}
 		DataUnavailableException(std::string str, std::string detail) {
@@ -51,7 +51,7 @@ namespace pangolin
 		std::string desc;
 	};
 
-	struct LIBRARY_API DataSequence
+	struct PANGOLIN_DLL DataSequence
 	{
 		DataSequence(unsigned int buffer_size = 1024, unsigned size = 0, float val = 0.0f );
 
@@ -74,7 +74,7 @@ namespace pangolin
 		return i >= (int)firstn && i < (int)n;
 	}
 
-	struct LIBRARY_API DataLog
+	struct PANGOLIN_DLL DataLog
 	{
 		DataLog(unsigned int buffer_size = 10000 );
 		void Log(float v);
@@ -121,7 +121,7 @@ namespace pangolin
 	const static int draw_modes_n = 2;
 	const static int draw_modes[] = {GL_LINE_STRIP, GL_POINTS};
 
-	struct LIBRARY_API Plotter : public View, Handler
+	struct PANGOLIN_DLL Plotter : public View, Handler
 	{
 		Plotter(DataLog* log, float left=0, float right=600, float bottom=-1, float top=1, float tickx=30, float ticky=0.5 );
 		void Render();

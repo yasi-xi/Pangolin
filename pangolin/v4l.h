@@ -50,7 +50,7 @@ namespace pangolin
 		size_t length;
 	};
 
-	class LIBRARY_API V4lVideo : public VideoInterface
+	class PANGOLIN_DLL V4lVideo : public VideoInterface
 	{
 	public:
 		V4lVideo(const char* dev_name, io_method io = IO_METHOD_MMAP);

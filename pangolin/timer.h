@@ -122,7 +122,7 @@ namespace pangolin
 		return currtime;
 	}
 
-	struct LIBRARY_API Timer
+	struct PANGOLIN_DLL Timer
 	{
 		Timer() {
 			Reset();

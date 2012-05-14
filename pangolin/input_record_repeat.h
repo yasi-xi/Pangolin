@@ -45,7 +45,7 @@ namespace pangolin
 		std::string val;
 	};
 
-	struct LIBRARY_API InputRecordRepeat
+	struct PANGOLIN_DLL InputRecordRepeat
 	{
 		InputRecordRepeat(const std::string& var_record_prefix);
 		~InputRecordRepeat();

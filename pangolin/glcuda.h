@@ -49,7 +49,7 @@ namespace pangolin
 		GlPixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER
 	};
 
-	LIBRARY_API struct GlBufferCudaPtr
+	PANGOLIN_DLL struct GlBufferCudaPtr
 	{
 		GlBufferCudaPtr(GlBufferType buffer_type, GLsizeiptr size_bytes, unsigned int cudause = cudaGraphicsMapFlagsNone, GLenum gluse = GL_DYNAMIC_DRAW );
 		~GlBufferCudaPtr();
@@ -61,14 +61,14 @@ namespace pangolin
 		GlBufferType buffer_type;
 	};
 
-	LIBRARY_API struct GlTextureCudaArray : GlTexture
+	PANGOLIN_DLL struct GlTextureCudaArray : GlTexture
 	{
 		GlTextureCudaArray(int width, int height, GLint internal_format);
 		~GlTextureCudaArray();
 		cudaGraphicsResource* cuda_res;
 	};
 
-	LIBRARY_API struct CudaScopedMappedPtr
+	PANGOLIN_DLL struct CudaScopedMappedPtr
 	{
 		CudaScopedMappedPtr(GlBufferCudaPtr& buffer);
 		~CudaScopedMappedPtr();
@@ -76,7 +76,7 @@ namespace pangolin
 		cudaGraphicsResource* res;
 	};
 
-	LIBRARY_API struct CudaScopedMappedArray
+	PANGOLIN_DLL struct CudaScopedMappedArray
 	{
 		CudaScopedMappedArray(GlTextureCudaArray& tex);
 		~CudaScopedMappedArray();
@@ -84,9 +84,9 @@ namespace pangolin
 		cudaGraphicsResource* res;
 	};
 
-	LIBRARY_API void CopyPboToTex(GlBufferCudaPtr& buffer, GlTexture& tex);
+	PANGOLIN_DLL void CopyPboToTex(GlBufferCudaPtr& buffer, GlTexture& tex);
 
-	LIBRARY_API void swap(GlBufferCudaPtr& a, GlBufferCudaPtr& b);
+	PANGOLIN_DLL void swap(GlBufferCudaPtr& a, GlBufferCudaPtr& b);
 
 	////////////////////////////////////////////////
 	// Implementation

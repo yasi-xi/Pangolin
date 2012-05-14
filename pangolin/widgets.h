@@ -35,9 +35,9 @@
 namespace pangolin
 {
 
-	LIBRARY_API View& CreatePanel(const std::string& name);
+	PANGOLIN_DLL View& CreatePanel(const std::string& name);
 
-	struct LIBRARY_API Panel : public View
+	struct PANGOLIN_DLL Panel : public View
 	{
 		Panel();
 		Panel(const std::string& auto_register_var_prefix);
@@ -47,7 +47,7 @@ namespace pangolin
 		boost::ptr_unordered_map<const std::string,View>& context_views;
 	};
 
-	struct LIBRARY_API Button : public View, Handler, Var<bool>
+	struct PANGOLIN_DLL Button : public View, Handler, Var<bool>
 	{
 		Button(std::string title, _Var& tv);
 		void Mouse(View&, MouseButton button, int x, int y, bool pressed, int mouse_state);
@@ -62,7 +62,7 @@ namespace pangolin
 		bool down;
 	};
 
-	struct LIBRARY_API Checkbox : public View, Handler, Var<bool>
+	struct PANGOLIN_DLL Checkbox : public View, Handler, Var<bool>
 	{
 		Checkbox(std::string title, _Var& tv);
 		void Mouse(View&, MouseButton button, int x, int y, bool pressed, int mouse_state);
@@ -76,7 +76,7 @@ namespace pangolin
 		Viewport vcb;
 	};
 
-	struct LIBRARY_API Slider : public View, Handler, Var<double>
+	struct PANGOLIN_DLL Slider : public View, Handler, Var<double>
 	{
 		Slider(std::string title, _Var& tv);
 		void Mouse(View&, MouseButton button, int x, int y, bool pressed, int mouse_state);
@@ -96,7 +96,7 @@ namespace pangolin
 		bool logscale;
 	};
 
-	struct LIBRARY_API TextInput : public View, Handler, Var<std::string>
+	struct PANGOLIN_DLL TextInput : public View, Handler, Var<std::string>
 	{
 		TextInput(std::string title, _Var& tv);
 		void Mouse(View&, MouseButton button, int x, int y, bool pressed, int mouse_state);

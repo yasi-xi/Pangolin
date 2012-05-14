@@ -81,15 +81,15 @@ namespace pangolin
 		Accessor<T>* a;
 	};
 
-	LIBRARY_API bool Pushed(Var<bool>& button);
+	PANGOLIN_DLL bool Pushed(Var<bool>& button);
 
-	LIBRARY_API void ParseVarsFile(const std::string& filename);
+	PANGOLIN_DLL void ParseVarsFile(const std::string& filename);
 
 	typedef void (*NewVarCallbackFn)(void* data, const std::string& name, _Var& var, const char* reg_type_name, bool brand_new);
-	LIBRARY_API void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter = "");
+	PANGOLIN_DLL void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter = "");
 
 	typedef void (*GuiVarChangedCallbackFn)(void* data, const std::string& name, _Var& var);
-	LIBRARY_API void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
+	PANGOLIN_DLL void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
 
 	template<typename T>
 	T FromFile( const std::string& filename, const T& init = T());
@@ -177,7 +177,7 @@ namespace pangolin
 	}
 
 
-	struct LIBRARY_API NewVarCallback
+	struct PANGOLIN_DLL NewVarCallback
 	{
 		NewVarCallback(const std::string& filter, NewVarCallbackFn fn, void* data)
 			:filter(filter),fn(fn),data(data) {}
@@ -186,7 +186,7 @@ namespace pangolin
 		void* data;
 	};
 
-	struct LIBRARY_API GuiVarChangedCallback
+	struct PANGOLIN_DLL GuiVarChangedCallback
 	{
 		GuiVarChangedCallback(const std::string& filter, GuiVarChangedCallbackFn fn, void* data)
 			:filter(filter),fn(fn),data(data) {}
@@ -195,9 +195,9 @@ namespace pangolin
 		void* data;
 	};
 
-	LIBRARY_API extern boost::ptr_unordered_map<std::string,_Var> vars;
-	LIBRARY_API extern std::vector<NewVarCallback> new_var_callbacks;
-	LIBRARY_API extern std::vector<GuiVarChangedCallback> gui_var_changed_callbacks;
+	PANGOLIN_DLL extern boost::ptr_unordered_map<std::string,_Var> vars;
+	PANGOLIN_DLL extern std::vector<NewVarCallback> new_var_callbacks;
+	PANGOLIN_DLL extern std::vector<GuiVarChangedCallback> gui_var_changed_callbacks;
 
 	template<typename T>
 	inline void Var<T>::Init(const std::string& name,

@@ -66,40 +66,40 @@ namespace pangolin
 	//! externally defined OpenGL context. You needn't call it
 	//! if you have used CreateGlutWindowAndBind() to create a GLUT
 	//! window
-	LIBRARY_API void BindToContext(std::string name);
+	PANGOLIN_DLL void BindToContext(std::string name);
 
 	//! @brief Request that the program exit
-	LIBRARY_API void Quit();
+	PANGOLIN_DLL void Quit();
 
 	//! @brief Returns true if user has requested to close OpenGL window.
-	LIBRARY_API bool ShouldQuit();
+	PANGOLIN_DLL bool ShouldQuit();
 
 	//! @brief Returns true if user has interacted with the window since this was last called
-	LIBRARY_API bool HadInput();
+	PANGOLIN_DLL bool HadInput();
 
 	//! @brief Returns true if user has pressed mouse buttons since this was last called
-	LIBRARY_API bool HadMousePress();
+	PANGOLIN_DLL bool HadMousePress();
 
 	//! @brief Returns true if user has resized the window
-	LIBRARY_API bool HasResized();
+	PANGOLIN_DLL bool HasResized();
 
 	namespace process
 	{
 		//! @brief Tell pangolin to process input to drive display
 		//! You will need to call this manually if you haven't let
 		//! Pangolin register callbacks from your windowing system
-		LIBRARY_API void Keyboard( unsigned char key, int x, int y);
+		PANGOLIN_DLL void Keyboard( unsigned char key, int x, int y);
 
-		LIBRARY_API void KeyboardUp(unsigned char key, int x, int y);
+		PANGOLIN_DLL void KeyboardUp(unsigned char key, int x, int y);
 
 		//! @brief Tell pangolin base window size has changed
 		//! You will need to call this manually if you haven't let
 		//! Pangolin register callbacks from your windowing system
-		LIBRARY_API void Resize(int width, int height);
+		PANGOLIN_DLL void Resize(int width, int height);
 
-		LIBRARY_API void Mouse( int button, int state, int x, int y);
+		PANGOLIN_DLL void Mouse( int button, int state, int x, int y);
 
-		LIBRARY_API void MouseMotion( int x, int y);
+		PANGOLIN_DLL void MouseMotion( int x, int y);
 	}
 
 #ifdef HAVE_GLUT
@@ -107,11 +107,11 @@ namespace pangolin
 	//! @brief Create GLUT window and bind Pangolin to it.
 	//! All GLUT initialisation is taken care of. This prevents you
 	//! from needing to call BindToContext() and TakeGlutCallbacks().
-	LIBRARY_API void CreateGlutWindowAndBind(std::string window_title, int w = 640, int h = 480, unsigned int mode = GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	PANGOLIN_DLL void CreateGlutWindowAndBind(std::string window_title, int w = 640, int h = 480, unsigned int mode = GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
 	//! @brief Allow Pangolin to take GLUT callbacks for its own uses
 	//! Not needed if you instantiated a window through CreateWindowAndBind().
-	LIBRARY_API void TakeGlutCallbacks();
+	PANGOLIN_DLL void TakeGlutCallbacks();
 
 #endif
 
@@ -165,7 +165,7 @@ namespace pangolin
 	};
 
 	//! @brief Encapsulates OpenGl Viewport
-	struct LIBRARY_API Viewport
+	struct PANGOLIN_DLL Viewport
 	{
 		Viewport() {}
 		Viewport(GLint l,GLint b,GLint w,GLint h);
@@ -204,7 +204,7 @@ namespace pangolin
 	const static CameraSpec CameraSpecYDownZForward = {{0,0,1},{0,-1,0},{1,0,0},{0,-1},{1,0}};
 
 	//! @brief Object representing OpenGl Matrix
-	struct LIBRARY_API OpenGlMatrixSpec {
+	struct PANGOLIN_DLL OpenGlMatrixSpec {
 		// Load matrix on to OpenGl stack
 		void Load() const;
 
@@ -222,7 +222,7 @@ namespace pangolin
 	//! @brief Object representing attached OpenGl Matrices / transforms
 	//! Only stores what is attached, not entire OpenGl state (which would
 	//! be horribly slow). Applying state is efficient.
-	struct LIBRARY_API OpenGlRenderState
+	struct PANGOLIN_DLL OpenGlRenderState
 	{
 		static void ApplyIdentity();
 		static void ApplyWindowCoords();
@@ -241,10 +241,10 @@ namespace pangolin
 	};
 
 	// Forward declaration
-	struct LIBRARY_API Handler;
+	struct PANGOLIN_DLL Handler;
 
 	//! @brief A Display manages the location and resizing of an OpenGl viewport.
-	struct LIBRARY_API View
+	struct PANGOLIN_DLL View
 	{
 		View()
 			: aspect(0.0), top(1.0),left(0.0),right(1.0),bottom(0.0), hlock(LockCenter),vlock(LockCenter),
@@ -343,7 +343,7 @@ namespace pangolin
 
 	//! @brief Input Handler base class with virtual methods which recurse
 	//! into sub-displays
-	struct LIBRARY_API Handler
+	struct PANGOLIN_DLL Handler
 	{
 		virtual ~Handler() {}
 		virtual void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
@@ -352,13 +352,13 @@ namespace pangolin
 	};
 	static Handler StaticHandler;
 
-	struct LIBRARY_API HandlerScroll : Handler
+	struct PANGOLIN_DLL HandlerScroll : Handler
 	{
 		void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
 	};
 	static HandlerScroll StaticHandlerScroll;
 
-	struct LIBRARY_API Handler3D : Handler
+	struct PANGOLIN_DLL Handler3D : Handler
 	{
 
 		Handler3D(OpenGlRenderState& cam_state, float trans_scale=0.01f)
@@ -377,24 +377,24 @@ namespace pangolin
 		GLdouble rot_center[3];
 	};
 
-	LIBRARY_API View& DisplayBase();
-	LIBRARY_API View& Display(const std::string& name);
+	PANGOLIN_DLL View& DisplayBase();
+	PANGOLIN_DLL View& Display(const std::string& name);
 
-	LIBRARY_API OpenGlMatrixSpec ProjectionMatrixRUB_BottomLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
-	LIBRARY_API OpenGlMatrixSpec ProjectionMatrixRDF_TopLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
-	LIBRARY_API OpenGlMatrixSpec ProjectionMatrixRDF_BottomLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
+	PANGOLIN_DLL OpenGlMatrixSpec ProjectionMatrixRUB_BottomLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
+	PANGOLIN_DLL OpenGlMatrixSpec ProjectionMatrixRDF_TopLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
+	PANGOLIN_DLL OpenGlMatrixSpec ProjectionMatrixRDF_BottomLeft(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
 
 	// Use OpenGl's default frame RUB_BottomLeft
-	LIBRARY_API OpenGlMatrixSpec ProjectionMatrix(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
+	PANGOLIN_DLL OpenGlMatrixSpec ProjectionMatrix(int w, int h, double fu, double fv, double u0, double v0, double zNear, double zFar );
 
-	LIBRARY_API OpenGlMatrixSpec IdentityMatrix(OpenGlStack type);
-	LIBRARY_API OpenGlMatrixSpec negIdentityMatrix(OpenGlStack type);
+	PANGOLIN_DLL OpenGlMatrixSpec IdentityMatrix(OpenGlStack type);
+	PANGOLIN_DLL OpenGlMatrixSpec negIdentityMatrix(OpenGlStack type);
 
 #ifdef HAVE_TOON
-	LIBRARY_API OpenGlMatrixSpec FromTooN(const TooN::SE3<>& T_cw);
-	LIBRARY_API OpenGlMatrixSpec FromTooN(OpenGlStack type, const TooN::Matrix<4,4>& M);
-	LIBRARY_API TooN::Matrix<4,4> ToTooN(const OpenGlMatrixSpec& ms);
-	LIBRARY_API TooN::SE3<> ToTooN_SE3(const OpenGlMatrixSpec& ms);
+	PANGOLIN_DLL OpenGlMatrixSpec FromTooN(const TooN::SE3<>& T_cw);
+	PANGOLIN_DLL OpenGlMatrixSpec FromTooN(OpenGlStack type, const TooN::Matrix<4,4>& M);
+	PANGOLIN_DLL TooN::Matrix<4,4> ToTooN(const OpenGlMatrixSpec& ms);
+	PANGOLIN_DLL TooN::SE3<> ToTooN_SE3(const OpenGlMatrixSpec& ms);
 #endif
 
 

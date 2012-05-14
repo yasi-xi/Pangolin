@@ -36,7 +36,7 @@
 namespace pangolin
 {
 
-	struct LIBRARY_API VideoRecordRepeat : public VideoInterface
+	struct PANGOLIN_DLL VideoRecordRepeat : public VideoInterface
 	{
 		VideoRecordRepeat(
 			std::string uri, std::string save_filename, int buffer_size_bytes

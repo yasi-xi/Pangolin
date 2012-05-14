@@ -34,9 +34,9 @@
 #define __thread __declspec(thread)
 
 #ifdef pangolin_EXPORTS
-#	define LIBRARY_API __declspec(dllexport)
+#	define PANGOLIN_DLL __declspec(dllexport)
 #else
-#	define LIBRARY_API __declspec(dllimport)
+#	define PANGOLIN_DLL __declspec(dllimport)
 #endif
 
 #endif //_MSVC_
