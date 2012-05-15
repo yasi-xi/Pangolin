@@ -21,7 +21,7 @@ IF(MSVC)
 		DOC "The GLEW library")
 
    ELSE(CMAKE_CL_64)
-	FIND_PATH( GLEW_INCLUDE_DIR GL/alew.h
+	FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
 		$ENV{PROGRAMFILES}/GLEW/include
 		DOC "The directory where GL/glew.h resides")
 	FIND_LIBRARY( GLEW_LIBRARY
