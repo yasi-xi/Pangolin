@@ -28,10 +28,10 @@
 #ifndef PANGOLIN_PVN_H
 #define PANGOLIN_PVN_H
 
-#include "pangolin.h"
-#include "video.h"
+#include <pangolin/pangolin.h>
+#include <pangolin/video.h>
+#include <pangolin/timer.h>
 #include "fstream"
-#include "timer.h"
 
 namespace pangolin
 {

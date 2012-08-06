@@ -6,15 +6,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
-
-# Allow the developer to select if Dynamic or Static libraries are built
-OPTION (BUILD_SHARED_LIB "Build As A Shared Library" ON)
-# Set the LIB_TYPE variable to STATIC
-SET(LIB_TYPE STATIC)
-IF(BUILD_SHARED_LIB)
-  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
-  SET (LIB_TYPE SHARED)
-ENDIF(BUILD_SHARED_LIB)
+OPTION(BUILD_SHARED_LIBS OFF)
 
 # Overide with cmake -DCMAKE_BUILD_TYPE=Debug {dir}
 IF( NOT CMAKE_BUILD_TYPE )
@@ -27,9 +19,8 @@ ENDIF()
 INCLUDE(SetPlatformVars)
 
 STRING(TOLOWER ${PROJECT_NAME} LIBRARY_NAME)
-SET(CMAKE_DEBUG_POSTFIX "d")
 
-# make an uninstall target
+# make an uninstall target 
 CONFIGURE_FILE(
  	"${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake.in"
   	"${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake"
@@ -44,4 +35,3 @@ ADD_SUBDIRECTORY(${LIBRARY_NAME})
 IF(BUILD_EXAMPLES)
   ADD_SUBDIRECTORY(examples)
 ENDIF()
-

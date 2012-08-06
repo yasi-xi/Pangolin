@@ -7,69 +7,53 @@ SET(
   platform.h
   simple_math.h
   display.h display_internal.h display.cpp
-  vars.h vars_internal.h vars.cpp
-  widgets.h widgets.cpp
   plotter.h plotter.cpp
-  gl.h glcuda.h #cg.h#
-  video.h video.cpp
-  firewire.h firewire.cpp
-  v4l.h v4l.cpp
-  ffmpeg.h ffmpeg.cpp
-  pvn_video.h pvn_video.cpp
-  video_recorder.h video_recorder.cpp
+  gl.h glcuda.h cg.h glsl.h
   threadedfilebuf.h threadedfilebuf.cpp
   timer.h
-  video_record_repeat.h video_record_repeat.cpp
-  input_record_repeat.h input_record_repeat.cpp
 )
+
+OPTION(BUILD_PANGOLIN_VARS "Build support for Pangolin Vars" ON)
+IF(BUILD_PANGOLIN_VARS)
+  LIST(APPEND SOURCES
+    vars.h vars_internal.h vars.cpp
+    input_record_repeat.h input_record_repeat.cpp
+    widgets.h widgets.cpp
+  )
+ENDIF()
+
+OPTION(BUILD_PANGOLIN_VIDEO "Build support for Pangolin Video Utilities" ON)
+IF(BUILD_PANGOLIN_VIDEO)
+  LIST(APPEND SOURCES
+    video.h video.cpp
+    video_recorder.h video_recorder.cpp
+    video_record_repeat.h video_record_repeat.cpp
+    video/pvn_video.h video/pvn_video.cpp
+  )
+ENDIF()
 
 #######################################################
 ## Find required dependencies
 
 FIND_PACKAGE(OpenGL REQUIRED QUIET)
-FIND_PACKAGE(GLEW REQUIRED QUIET)
-FIND_PACKAGE(FREEGLUT REQUIRED)
+FIND_PACKAGE(GLEW REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS thread REQUIRED QUIET)
 
-IF(FREEGLUT_FOUND)
-   SET(HAVE_GLUT 1)
-   MESSAGE(STATUS "Freeglut Found and Enabled")
-   IF(MSVC)
-      IF(NOT BUILD_SHARED_LIB)
-         ADD_DEFINITIONS(-DFREEGLUT_STATIC)
-      ENDIF(NOT BUILD_SHARED_LIB)
-   ENDIF(MSVC)
-ENDIF(FREEGLUT_FOUND)
+## Apply required dependencies settings
+LIST(APPEND LINK_LIBS "${OPENGL_LIBRARIES};${GLEW_LIBRARY};${Boost_LIBRARIES}" )
+LIST(APPEND LIB_DIRS  "${OPENGL_LIBRARY_DIR};${GLEW_LIBRARY_DIR};${Boost_LIBRARY_DIRS};${PROJECT_BINARY_DIR}/pangolin" )
+LIST(APPEND USER_INC  "${OPENGL_INCLUDE_DIR};${GLEW_INCLUDE_DIR};${Boost_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR}/..;${PROJECT_BINARY_DIR}" )
 
-IF(GLEW_FOUND)
-  SET(HAVE_GLEW 1)
-  MESSAGE(STATUS "GLEW Found and Enabled")
-ENDIF(GLEW_FOUND)
-
-IF(MSVC)
-   SET(BOOST_ROOT "C:/boost/boost_1_49_0")
-   IF(CMAKE_CL_64)
-      SET(BOOST_LIBRARYDIR ${BOOST_ROOT}/stage/lib/x64)
-      MESSAGE(${Boost_LIBRARY_DIRS})
-   ELSE(CMAKE_CL_64)
-      SET(BOOST_LIBRARYDIR ${BOOST_ROOT}/stage/lib/x86)
-   ENDIF(CMAKE_CL_64)
-   IF(BUILD_SHARED_LIB)
-      ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
-   ELSE(BUILD_SHARED_LIB)
-      SET(Boost_USE_STATIC_LIBS ON)
-      SET(Boost_USE_STATIC_RUNTIME ON)
-   ENDIF(BUILD_SHARED_LIB)
-ENDIF(MSVC)
-FIND_PACKAGE(Boost COMPONENTS thread date_time REQUIRED)
-
-FIND_PACKAGE(FFMPEG QUIET)
-IF(FFMPEG_FOUND)
-  SET(HAVE_FFMPEG 1)
-  INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${FFMPEG_INCLUDE_DIR} )
-  MESSAGE(STATUS "ffmpeg Found and Enabled")
-ENDIF(FFMPEG_FOUND)
 #######################################################
 ## Find optional dependencies
+
+FIND_PACKAGE(CVARS QUIET)
+IF(CVARS_FOUND)
+  SET(HAVE_CVARS 1)
+  LIST(APPEND USER_INC  ${CVARS_INCLUDE_DIR} )
+  LIST(APPEND LINK_LIBS ${CVARS_LIBRARIES} )
+  LIST(APPEND LIB_DIRS ${CVARS_DIR} )
+ENDIF()
 
 FIND_PACKAGE(CUDA QUIET)
 IF(CUDA_FOUND)
@@ -77,43 +61,103 @@ IF(CUDA_FOUND)
   CUDA_INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
   SET(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
   SET(CUDA_NVCC_FLAGS "-O3" )
-  SET(CUDA_NVCC_FLAGS "-O3;-arch=sm_11;--verbose")
   ADD_DEFINITIONS(-DCUDA_BUILD)
   MESSAGE(STATUS "CUDA Found and Enabled")
 ENDIF()
 
-IF(CUDA_FOUND)
-  CUDA_ADD_LIBRARY(${LIBRARY_NAME} ${LIB_TYPE} ${SOURCES})
-ELSE(CUDA_FOUND)
-  ADD_LIBRARY(${LIBRARY_NAME} ${LIB_TYPE} ${SOURCES})
-ENDIF(CUDA_FOUND)
+FIND_PACKAGE(FREEGLUT)
+FIND_PACKAGE(GLUT)
+
+# Prefer FREEGLUT
+IF(FREEGLUT_FOUND)
+  SET(HAVE_FREEGLUT 1)
+  LIST(APPEND USER_INC  ${FREEGLUT_INCLUDE_DIR} )
+  LIST(APPEND LINK_LIBS ${FREEGLUT_LIBRARY} )
+ELSEIF(GLUT_FOUND)
+  LIST(APPEND USER_INC  ${GLUT_INCLUDE_DIR} )
+  LIST(APPEND LINK_LIBS ${GLUT_LIBRARY} )
+  IF(_OSX_)
+    SET(HAVE_APPLE_OPENGL_FRAMEWORK 1)
+    MESSAGE(STATUS "Using Apple Framework GLUT. Install Freeglut for scroll support.")
+  ENDIF()
+ENDIF()
+
+IF(FREEGLUT_FOUND OR GLUT_FOUND)
+    SET(HAVE_GLUT 1)
+    MESSAGE(STATUS "Glut Found and Enabled")
+ENDIF()
+
+FIND_PACKAGE(Eigen3)
+IF(EIGEN3_FOUND)
+  SET(HAVE_EIGEN 1)
+  LIST(APPEND USER_INC  ${EIGEN3_INCLUDE_DIR} )
+  MESSAGE(STATUS "Eigen Found and Enabled")
+ENDIF()
+
+FIND_PACKAGE(TooN QUIET)
+IF(TooN_FOUND)
+  SET(HAVE_TOON 1)
+  LIST(APPEND USER_INC  ${TooN_INCLUDE_DIR} )
+  MESSAGE(STATUS "TooN Found and Enabled")
+ENDIF()
 
 FIND_PACKAGE(DC1394 QUIET)
-IF(DC1394_FOUND)
+IF(BUILD_PANGOLIN_VIDEO AND DC1394_FOUND)
   SET(HAVE_DC1394 1)
-  INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${DC1394_INCLUDE_DIR} )
-  TARGET_LINK_LIBRARIES( ${LIBRARY_NAME} ${DC1394_LIBRARY} )
+  LIST(APPEND INTERNAL_INC  ${DC1394_INCLUDE_DIR} )
+  LIST(APPEND LINK_LIBS  ${DC1394_LIBRARY} )
+  LIST(APPEND SOURCES video/firewire.h video/firewire.cpp)
   MESSAGE(STATUS "libdc1394 Found and Enabled")
 ENDIF()
 
-#FIND_PACKAGE(TooN QUIET)
-#IF(TooN_FOUND)
-#  SET(HAVE_TOON 1)
-#  INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${TooN_INCLUDE_DIR} )
-#  MESSAGE(STATUS "TooN Found and Enabled")
-#ENDIF()
+IF(BUILD_PANGOLIN_VIDEO AND _LINUX_)
+  SET(HAVE_V4L 1)
+  LIST(APPEND SOURCES video/v4l.h video/v4l.cpp)
+ENDIF()
 
-## Apply required dependencies settings
-INCLUDE_DIRECTORIES( ${LIBRARY_NAME} ${GLEW_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${FREEGLUT_INCLUDE_DIR})
-TARGET_LINK_LIBRARIES( ${LIBRARY_NAME} ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} ${GLEW_LIBRARY} ${FREEGLUT_LIBRARY} ${FFMPEG_LIBRARIES})
+FIND_PACKAGE(FFMPEG QUIET)
+IF(BUILD_PANGOLIN_VIDEO AND FFMPEG_FOUND)
+  SET(HAVE_FFMPEG 1)
+  LIST(APPEND INTERNAL_INC  ${FFMPEG_INCLUDE_DIRS} )
+  LIST(APPEND LINK_LIBS ${FFMPEG_LIBRARIES} )
+  LIST(APPEND SOURCES video/ffmpeg.h video/ffmpeg.cpp)
+  MESSAGE(STATUS "ffmpeg Found and Enabled")
+ENDIF()
+
+FIND_PACKAGE(OpenNI QUIET)
+IF(BUILD_PANGOLIN_VIDEO AND OPENNI_FOUND)
+  SET(HAVE_OPENNI 1)
+  if(CMAKE_COMPILER_IS_GNUCXX)
+     # Ignore warnings generated from third party includes
+     set_source_files_properties( video/openni.cpp video.cpp PROPERTIES COMPILE_FLAGS " -w " )
+  endif(CMAKE_COMPILER_IS_GNUCXX)
+  LIST(APPEND INTERNAL_INC  ${OPENNI_INCLUDE_DIRS} )
+  LIST(APPEND LINK_LIBS ${OPENNI_LIBRARIES} )
+  LIST(APPEND SOURCES video/openni.h video/openni.cpp)
+  MESSAGE(STATUS "OpenNI Found and Enabled")
+ENDIF()
+
+#######################################################
+## Add Librarys / Include Directories / Link directories
+
+INCLUDE_DIRECTORIES( ${INTERNAL_INC} )
+INCLUDE_DIRECTORIES( ${USER_INC} )
+LINK_LIBRARIES(${LINK_LIBS})
+LINK_DIRECTORIES(${LIB_DIRS})
+
+IF(CUDA_FOUND)
+  CUDA_ADD_LIBRARY(${LIBRARY_NAME} ${SOURCES})
+ELSE()
+  ADD_LIBRARY(${LIBRARY_NAME} ${SOURCES})
+ENDIF()
 
 ## Set Special Compiler flags
 IF(MSVC)
   SET(CMAKE_CXX_FLAGS "/EHs")
 ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations -Werror")
-ENDIF(MSVC)
-
+#  SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations -Werror")
+  SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations")
+ENDIF()
 
 #######################################################
 ## Create configure file for inclusion in library
@@ -122,7 +166,6 @@ CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
   "${CMAKE_CURRENT_BINARY_DIR}/config.h"
 )
-INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
 
 #######################################################
 ## Define headers files associated with the install target 
@@ -130,20 +173,17 @@ SET(INSTALL_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/config.h
 	cg.h 
 	display.h 
 	display_internal.h 
-	ffmpeg.h 
-	firewire.h 
 	gl.h 
 	glcuda.h 
 	pangolin.h 
 	platform.h 
 	plotter.h 
 	simple_math.h 
-	v4l.h 
 	vars.h 
 	vars_internal.h 
 	video.h 
-	widgets.h
-	timer.h
+        video/firewire.h
+        widgets.h
 )
 
 # install headers
@@ -151,28 +191,14 @@ INSTALL(FILES ${INSTALL_HEADERS}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${LIBRARY_NAME}
 )
 
-IF(CMAKE_CL_64)
-   # install library when Debug mode
-   INSTALL(TARGETS ${LIBRARY_NAME}
-     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x64/Debug CONFIGURATIONS Debug
-     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x64/Debug CONFIGURATIONS Debug
-     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x64/Debug CONFIGURATIONS Debug)
+# install library
+INSTALL(TARGETS ${LIBRARY_NAME}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
 
-   # install library when Release mode
-   INSTALL(TARGETS ${LIBRARY_NAME}
-     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x64/Release CONFIGURATIONS Release
-     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x64/Release CONFIGURATIONS Release
-     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x64/Release CONFIGURATIONS Release)
-ELSE(CMAKE_CL_64)
-   # install library when Debug mode
-   INSTALL(TARGETS ${LIBRARY_NAME}
-     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x86/Debug CONFIGURATIONS Debug
-     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x86/Debug CONFIGURATIONS Debug
-     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x86/Debug CONFIGURATIONS Debug)
-
-   # install library when Release mode
-   INSTALL(TARGETS ${LIBRARY_NAME}
-     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x86/Release CONFIGURATIONS Release
-     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x86/Release CONFIGURATIONS Release
-     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/x86/Release CONFIGURATIONS Release)
-ENDIF(CMAKE_CL_64)
+# Export config file for easy inclusion into other projects: FIND_PACKAGE( Pangolin )
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/PangolinConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/PangolinConfig.cmake @ONLY IMMEDIATE )
+EXPORT( PACKAGE Pangolin )

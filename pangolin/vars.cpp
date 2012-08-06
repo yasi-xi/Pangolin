@@ -39,9 +39,9 @@ using namespace boost;
 namespace pangolin
 {
 
-	PANGOLIN_DLL boost::ptr_unordered_map<string,_Var> vars;
-	PANGOLIN_DLL vector<NewVarCallback> new_var_callbacks;
-	PANGOLIN_DLL vector<GuiVarChangedCallback> gui_var_changed_callbacks;
+    boost::ptr_unordered_map<string,_Var> vars;
+    vector<NewVarCallback> new_var_callbacks;
+    vector<GuiVarChangedCallback> gui_var_changed_callbacks;
 
 	void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter)
 	{

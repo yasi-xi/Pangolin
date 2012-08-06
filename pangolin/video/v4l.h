@@ -28,10 +28,8 @@
 #ifndef PANGOLIN_V4L_H
 #define PANGOLIN_V4L_H
 
-#include "pangolin.h"
-#include "video.h"
-
-#ifndef _WIN32
+#include <pangolin/pangolin.h>
+#include <pangolin/video.h>
 
 #include <asm/types.h>
 #include <linux/videodev2.h>
@@ -101,7 +99,5 @@ namespace pangolin
 	};
 
 }
-
-#endif // _WIN32
 
 #endif // PANGOLIN_V4L_H

@@ -26,7 +26,6 @@
 */
 
 #include "firewire.h"
-#ifdef HAVE_DC1394
 
 #include <stdio.h>
 #include <stdint.h>
@@ -791,4 +790,3 @@ namespace pangolin
 
 }
 
-#endif

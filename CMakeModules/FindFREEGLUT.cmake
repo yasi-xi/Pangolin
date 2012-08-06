@@ -4,73 +4,41 @@
 # FREEGLUT_LIBRARY
 # FREEGLUT_FOUND
 
-IF(MSVC)
+FIND_PATH(
+  FREEGLUT_INCLUDE_DIR GL/freeglut.h
+  ${CMAKE_INCLUDE_PATH}
+  $ENV{include}
+  ${OPENGL_INCLUDE_DIR}
+  /usr/include
+  /usr/local/include
+)
 
-   FIND_PATH(FREEGLUT_INCLUDE_DIR GL/freeglut.h
-      $ENV{PROGRAMFILES}/Freeglut/include
-      DOC "The directory where GL/freeflut.h resides")
+SET(STORE_CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK})
+SET(CMAKE_FIND_FRAMEWORK NEVER)
 
-   IF(BUILD_SHARED_LIB OR USE_SHARED_LIB)
-      IF(CMAKE_CL_64) 
-         FIND_LIBRARY(FREEGLUT_LIBRARY
-            NAMES freeglut
-            PATHS
-            $ENV{ProgramW6432}/Freeglut/lib
-            DOC "The FREEGLUT 64-bit library")
-      ELSE(CMAKE_CL_64)
-         FIND_LIBRARY( FREEGLUT_LIBRARY
-            NAMES freeglut
-            PATHS
-            $ENV{PROGRAMFILES}/Freeglut/lib
-            DOC "The FREEGLUT 32-bit library")
-      ENDIF(CMAKE_CL_64)
-   ELSE(BUILD_SHARED_LIB OR USE_SHARED_LIB)
-      IF(CMAKE_CL_64) 
-         FIND_LIBRARY( FREEGLUT_LIBRARY
-            NAMES freeglut_static
-            PATHS
-            $ENV{ProgramW6432}/Freeglut/lib
-            DOC "The FREEGLUT 64-bit library")
-      ELSE(CMAKE_CL_64)
-         FIND_LIBRARY( FREEGLUT_LIBRARY
-            NAMES freeglut_static
-            PATHS
-            $ENV{PROGRAMFILES}/Freeglut/lib
-            DOC "The FREEGLUT 32-bit library")
-      ENDIF(CMAKE_CL_64)
-   ENDIF(BUILD_SHARED_LIB OR USE_SHARED_LIB)
-   
-ELSE(MSVC)
+FIND_LIBRARY(
+  FREEGLUT_LIBRARY
+  NAMES freeglut_static freeglut glut
+  PATH
+    /opt/local/lib
+    ${CMAKE_LIBRARY_PATH}
+    $ENV{lib}
+    /usr/lib
+    /usr/local/lib
+)
 
-   FIND_PATH(
-      FREEGLUT_INCLUDE_DIR GL/freeglut.h
-      ${CMAKE_INCLUDE_PATH}
-      $ENV{include}
-      ${OPENGL_INCLUDE_DIR}
-      /usr/include
-      /usr/local/include)
+SET(CMAKE_FIND_FRAMEWORK ${STORE_CMAKE_FIND_FRAMEWORK})
 
-   FIND_LIBRARY(
-      FREEGLUT_LIBRARY
-      NAMES freeglut_static freeglut glut
-      PATH
-      ${CMAKE_LIBRARY_PATH}
-      $ENV{lib}
-      /usr/lib
-      /usr/local/lib)
-
-
-ENDIF(MSVC)
-
-IF(FREEGLUT_INCLUDE_DIR AND FREEGLUT_LIBRARY)
+IF (FREEGLUT_INCLUDE_DIR AND FREEGLUT_LIBRARY)
    SET(FREEGLUT_FOUND TRUE)
-   IF(NOT FREEGLUT_FIND_QUIETLY)
-      MESSAGE(STATUS "Freeglut Found")
-   ENDIF(NOT FREEGLUT_FIND_QUIETLY)
-ELSE(FREEGLUT_INCLUDE_DIR AND FREEGLUT_LIBRARY)
-   SET(FREEGLUT_FOUND FALSE)
-   IF(FREEGLUT_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "Cannot Find Freeglut")
-   ENDIF(FREEGLUT_FIND_REQUIRED)
-ENDIF(FREEGLUT_INCLUDE_DIR AND FREEGLUT_LIBRARY)
+ENDIF (FREEGLUT_INCLUDE_DIR AND FREEGLUT_LIBRARY)
 
+IF (FREEGLUT_FOUND)
+   IF (NOT FREEGLUT_FIND_QUIETLY)
+      MESSAGE(STATUS "Found FREEGLUT: ${FREEGLUT_LIBRARY}")
+   ENDIF (NOT FREEGLUT_FIND_QUIETLY)
+ELSE (FREEGLUT_FOUND)
+   IF (FREEGLUT_FIND_REQUIRED)
+      MESSAGE(FATAL_ERROR "Could not find FREEGLUT")
+   ENDIF (FREEGLUT_FIND_REQUIRED)
+ENDIF (FREEGLUT_FOUND)

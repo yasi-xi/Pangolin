@@ -1,6 +1,6 @@
-#include "video_record_repeat.h"
-#include "pvn_video.h"
-#include "widgets.h"
+#include <pangolin/video_record_repeat.h>
+#include <pangolin/video/pvn_video.h>
+#include <pangolin/widgets.h>
 
 namespace pangolin
 {
@@ -159,6 +159,17 @@ namespace pangolin
 	{
 		return frame_num;
 	}
+
+bool VideoRecordRepeat::IsRecording() const
+{
+    return video_recorder != 0;
+}
+
+bool VideoRecordRepeat::IsPlaying() const
+{
+    return video_file != 0;
+}
+
 
 
 }
