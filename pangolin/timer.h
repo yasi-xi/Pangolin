@@ -73,7 +73,7 @@ namespace pangolin
 		return t;
 	}
 
-	inline double TimeDiff_s(basetime start, basetime end)
+    inline double TimeDiffInMicroSec(basetime start, basetime end)
 	{
 		return (double)(end.tv_sec - start.tv_sec) + (double)(end.tv_usec - start.tv_usec) * 1E-6;
 	}

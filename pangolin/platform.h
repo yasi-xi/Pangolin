@@ -39,6 +39,10 @@
 #	define PANGOLIN_DLL __declspec(dllimport)
 #endif
 
+#else
+
+#define PANGOLIN_DLL
+
 #endif //_MSVC_
 
 #endif // PANGOLIN_PLATFORM_H
