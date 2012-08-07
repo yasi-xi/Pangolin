@@ -34,15 +34,15 @@
 #define __thread __declspec(thread)
 
 #ifdef pangolin_EXPORTS
-#	define PANGOLIN_DLL __declspec(dllexport)
+#define PANGOLIN_API __declspec(dllexport)
 #else
-#	define PANGOLIN_DLL __declspec(dllimport)
+#define PANGOLIN_API __declspec(dllimport)
 #endif
 
+#define _USE_MATH_DEFINES
+
 #else
-
-#define PANGOLIN_DLL
-
+#define PANGOLIN_API
 #endif //_MSVC_
 
 #endif // PANGOLIN_PLATFORM_H

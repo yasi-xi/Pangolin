@@ -83,7 +83,7 @@ int main( int /*argc*/, char* argv[] )
     static Var<double> a_double_log("ui.Log scale var",3,1,1E4, true);
     static Var<bool> a_checkbox("ui.A Checkbox",false,true);
     static Var<int> an_int_no_input("ui.An Int No Input",2);
-    static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
+    //static Var<CustomType> any_type("ui.Some Type",(CustomType){0,1.2,"Hello"});
 
     if( Pushed(a_button) )
       cout << "You Pushed a button!" << endl;
@@ -93,8 +93,8 @@ int main( int /*argc*/, char* argv[] )
     if( a_checkbox )
       an_int = a_double;
 
-    if( !any_type->z.compare("robot"))
-        any_type = (CustomType){1,2.3,"Boogie"};
+    //if( !any_type->z.compare("robot"))
+    //    any_type = (CustomType){1,2.3,"Boogie"};
 
     an_int_no_input = an_int;
 

@@ -38,6 +38,7 @@
 #include <fstream>
 
 #include "vars_internal.h"
+#include "platform.h"
 
 namespace pangolin
 {
@@ -80,23 +81,23 @@ struct Var
   Accessor<T>* a;
 };
 
-bool Pushed(Var<bool>& button);
+PANGOLIN_API bool Pushed(Var<bool>& button);
 
-void ParseVarsFile(const std::string& filename);
+PANGOLIN_API void ParseVarsFile(const std::string& filename);
 
 typedef void (*NewVarCallbackFn)(void* data, const std::string& name, _Var& var, const char* reg_type_name, bool brand_new);
-void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter = "");
+PANGOLIN_API void RegisterNewVarCallback(NewVarCallbackFn callback, void* data, const std::string& filter = "");
 
 typedef void (*GuiVarChangedCallbackFn)(void* data, const std::string& name, _Var& var);
-void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
+PANGOLIN_API void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
 
-template<typename T>
-T FromFile( const std::string& filename, const T& init = T());
+template<typename T> 
+PANGOLIN_API T FromFile( const std::string& filename, const T& init = T());
 
-template<typename T>
-void FillFromFile( const std::string& filename, std::vector<T>& v, const T& init = T());
+template<typename T> 
+PANGOLIN_API void FillFromFile( const std::string& filename, std::vector<T>& v, const T& init = T());
 
-template<typename T>
+template<typename T> 
 struct SetVarFunctor
 {
     SetVarFunctor(const std::string& name, T val) : varName(name), setVal(val) {}
@@ -105,7 +106,7 @@ struct SetVarFunctor
     T setVal;
 };
 
-struct ToggleVarFunctor
+struct PANGOLIN_API ToggleVarFunctor
 {
     ToggleVarFunctor(const std::string& name) : varName(name) {}
     void operator()() { Var<bool> val(varName); val = !val; }
@@ -210,9 +211,9 @@ struct GuiVarChangedCallback
   void* data;
 };
 
-extern boost::ptr_unordered_map<std::string,_Var> vars;
-extern std::vector<NewVarCallback> new_var_callbacks;
-extern std::vector<GuiVarChangedCallback> gui_var_changed_callbacks;
+PANGOLIN_API extern boost::ptr_unordered_map<std::string,_Var> vars;
+PANGOLIN_API extern std::vector<NewVarCallback> new_var_callbacks;
+PANGOLIN_API extern std::vector<GuiVarChangedCallback> gui_var_changed_callbacks;
 
 template<typename T>
 inline void Var<T>::Init(const std::string& name,
@@ -233,7 +234,7 @@ inline void Var<T>::Init(const std::string& name,
     // found
     var = vi->second;
     a = Accessor<T>::Create(var->type_name,var->val);
-    if( var->generic && var->type_name != typeid(T).name() )
+    if( var->generic && strcmp(var->type_name, typeid(T).name()) != 0 )
     {
       // re-specialise this variable
       //      std::cout << "Specialising " << name << std::endl;
@@ -273,7 +274,7 @@ inline void Var<T>::Init(const std::string& name,
       da = new _Accessor<T,bool>( *(bool*)var->val_default );
     }else if( boost::is_integral<T>::value ) {
       var->create(new int, new int, typeid(int).name() );
-      var->meta_increment = std::max(1.0,default_increment);
+      var->meta_increment = (std::max)(1.0,default_increment);
       a = new _Accessor<T,int>( *(int*)var->val );
       da = new _Accessor<T,int>( *(int*)var->val_default );
     }else if( boost::is_scalar<T>::value ) {

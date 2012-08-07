@@ -49,7 +49,7 @@ enum GlBufferType
   GlPixelUnpackBuffer = GL_PIXEL_UNPACK_BUFFER
 };
 
-struct GlBufferCudaPtr
+struct PANGOLIN_API GlBufferCudaPtr
 {
   GlBufferCudaPtr(GlBufferType buffer_type, GLsizeiptr size_bytes, unsigned int cudause = cudaGraphicsMapFlagsNone, GLenum gluse = GL_DYNAMIC_DRAW );
   ~GlBufferCudaPtr();
@@ -64,7 +64,7 @@ private:
   GlBufferCudaPtr(const GlBufferCudaPtr&) {}
 };
 
-struct GlTextureCudaArray : GlTexture
+struct PANGOLIN_API GlTextureCudaArray : GlTexture
 {
   // Some internal_formats aren't accepted. I have trouble with GL_RGB8
   GlTextureCudaArray(int width, int height, GLint internal_format, bool sampling_linear = true);
@@ -72,7 +72,7 @@ struct GlTextureCudaArray : GlTexture
   cudaGraphicsResource* cuda_res;
 };
 
-struct CudaScopedMappedPtr
+struct PANGOLIN_API CudaScopedMappedPtr
 {
   CudaScopedMappedPtr(GlBufferCudaPtr& buffer);
   ~CudaScopedMappedPtr();
@@ -83,7 +83,7 @@ private:
   CudaScopedMappedPtr(const CudaScopedMappedPtr&) {}
 };
 
-struct CudaScopedMappedArray
+struct PANGOLIN_API CudaScopedMappedArray
 {
   CudaScopedMappedArray(GlTextureCudaArray& tex);
   ~CudaScopedMappedArray();
@@ -94,9 +94,9 @@ private:
   CudaScopedMappedArray(const CudaScopedMappedArray&) {}
 };
 
-void CopyPboToTex(GlBufferCudaPtr& buffer, GlTexture& tex);
+PANGOLIN_API void CopyPboToTex(GlBufferCudaPtr& buffer, GlTexture& tex);
 
-void swap(GlBufferCudaPtr& a, GlBufferCudaPtr& b);
+PANGOLIN_API void swap(GlBufferCudaPtr& a, GlBufferCudaPtr& b);
 
 ////////////////////////////////////////////////
 // Implementation

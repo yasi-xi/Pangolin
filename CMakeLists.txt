@@ -6,7 +6,15 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
-OPTION(BUILD_SHARED_LIBS OFF)
+OPTION(BUILD_SHARED_LIBS "Build a shared Pangolin library" ON)
+
+# Set the LIB_TYPE variable to STATIC
+SET (LIB_TYPE STATIC)
+IF (BUILD_SHARED_LIBS)
+  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
+  SET (LIB_TYPE SHARED)
+ENDIF (BUILD_SHARED_LIBS)
+
 
 # Overide with cmake -DCMAKE_BUILD_TYPE=Debug {dir}
 IF( NOT CMAKE_BUILD_TYPE )
@@ -19,6 +27,7 @@ ENDIF()
 INCLUDE(SetPlatformVars)
 
 STRING(TOLOWER ${PROJECT_NAME} LIBRARY_NAME)
+SET(CMAKE_DEBUG_POSTFIX "d")
 
 # make an uninstall target 
 CONFIGURE_FILE(

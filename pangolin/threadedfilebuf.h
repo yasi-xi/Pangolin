@@ -41,7 +41,7 @@
 namespace pangolin
 {
 
-	class PANGOLIN_DLL threadedfilebuf : public std::streambuf
+	class PANGOLIN_API threadedfilebuf : public std::streambuf
 	{
 	public:
 		threadedfilebuf(const std::string& filename, unsigned int buffer_size_bytes);

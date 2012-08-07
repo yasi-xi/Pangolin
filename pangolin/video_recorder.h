@@ -39,7 +39,7 @@
 
 namespace pangolin
 {
-	struct PANGOLIN_DLL VideoRecorderException : std::exception
+	struct PANGOLIN_API VideoRecorderException : std::exception
 	{
 		VideoRecorderException(std::string str) : desc(str) {}
 		VideoRecorderException(std::string str, std::string detail) {
@@ -50,7 +50,7 @@ namespace pangolin
 		std::string desc;
 	};
 
-	class PANGOLIN_DLL VideoRecorder
+	class PANGOLIN_API VideoRecorder
 	{
 	public:
 		VideoRecorder(

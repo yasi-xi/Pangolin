@@ -4,6 +4,44 @@
 # FREEGLUT_LIBRARY
 # FREEGLUT_FOUND
 
+IF(MSVC)
+
+   FIND_PATH(FREEGLUT_INCLUDE_DIR GL/freeglut.h
+      $ENV{PROGRAMFILES}/Freeglut/include
+      DOC "The directory where GL/freeflut.h resides")
+
+   IF(BUILD_SHARED_LIBS)
+      IF(CMAKE_CL_64) 
+         FIND_LIBRARY(FREEGLUT_LIBRARY
+            NAMES freeglut
+            PATHS
+            $ENV{ProgramW6432}/Freeglut/lib
+            DOC "The FREEGLUT 64-bit library")
+      ELSE(CMAKE_CL_64)
+         FIND_LIBRARY( FREEGLUT_LIBRARY
+            NAMES freeglut
+            PATHS
+            $ENV{PROGRAMFILES}/Freeglut/lib
+            DOC "The FREEGLUT 32-bit library")
+      ENDIF(CMAKE_CL_64)
+   ELSE(BUILD_SHARED_LIBS)
+      IF(CMAKE_CL_64) 
+         FIND_LIBRARY(FREEGLUT_LIBRARY
+            NAMES freeglut_static
+            PATHS
+            $ENV{ProgramW6432}/Freeglut/lib
+            DOC "The FREEGLUT 64-bit library")
+      ELSE(CMAKE_CL_64)
+         FIND_LIBRARY( FREEGLUT_LIBRARY
+            NAMES freeglut_static
+            PATHS
+            $ENV{PROGRAMFILES}/Freeglut/lib
+            DOC "The FREEGLUT 32-bit library")
+      ENDIF(CMAKE_CL_64)
+   ENDIF(BUILD_SHARED_LIBS)
+   
+ELSE(MSVC)
+
 FIND_PATH(
   FREEGLUT_INCLUDE_DIR GL/freeglut.h
   ${CMAKE_INCLUDE_PATH}
@@ -26,6 +64,9 @@ FIND_LIBRARY(
     /usr/lib
     /usr/local/lib
 )
+
+ENDIF(MSVC)
+
 
 SET(CMAKE_FIND_FRAMEWORK ${STORE_CMAKE_FIND_FRAMEWORK})
 

@@ -46,7 +46,7 @@ namespace pangolin
 // Interface
 ////////////////////////////////////////////////
 
-class GlTexture
+class PANGOLIN_API GlTexture
 {
 public:
   //! internal_format normally one of GL_RGBA8, GL_LUMINANCE8, GL_INTENSITY16
@@ -83,7 +83,7 @@ private:
   GlTexture(const GlTexture&) {}
 };
 
-struct GlRenderBuffer
+struct PANGOLIN_API GlRenderBuffer
 {
   GlRenderBuffer(GLint width, GLint height, GLint internal_format = GL_DEPTH_COMPONENT24);
   ~GlRenderBuffer();
@@ -91,7 +91,7 @@ struct GlRenderBuffer
   GLuint rbid;
 };
 
-struct GlFramebuffer
+struct PANGOLIN_API GlFramebuffer
 {
   GlFramebuffer();
   GlFramebuffer(GlTexture& colour, GlRenderBuffer& depth);
@@ -105,12 +105,12 @@ struct GlFramebuffer
   unsigned attachments;
 };
 
-void glColorHSV( double hue, double s, double v );
+PANGOLIN_API void glColorHSV( double hue, double s, double v );
 
-void glColorBin( int bin, int max_bins, double sat = 1.0, double val = 1.0 );
+PANGOLIN_API void glColorBin( int bin, int max_bins, double sat = 1.0, double val = 1.0 );
 
-void glPixelTransferScale( float r, float g, float b );
-void glPixelTransferScale( float scale );
+PANGOLIN_API void glPixelTransferScale( float r, float g, float b );
+PANGOLIN_API void glPixelTransferScale( float scale );
 
 ////////////////////////////////////////////////
 // Implementation

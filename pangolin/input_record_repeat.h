@@ -35,14 +35,14 @@
 namespace pangolin
 {
 
-struct FrameInput
+struct PANGOLIN_API FrameInput
 {
     int index;
     std::string var;
     std::string val;
 };
 
-struct InputRecordRepeat
+struct PANGOLIN_API InputRecordRepeat
 {
     InputRecordRepeat(const std::string& var_record_prefix);
     ~InputRecordRepeat();

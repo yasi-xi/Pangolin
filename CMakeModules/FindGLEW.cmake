@@ -7,20 +7,32 @@
 # GLEW_LIBRARY
 # 
 
-IF (WIN32)
-	FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h
+IF(MSVC)
+
+   IF(CMAKE_CL_64)
+
+      FIND_PATH(GLEW_INCLUDE_DIR GL/glew.h
+		$ENV{PROGRAMW6432}/GLEW/include
+		DOC "The directory where GL/glew.h resides")
+      FIND_LIBRARY(GLEW_LIBRARY
+		NAMES glew GLEW glew32 glew32s
+		PATHS
+		$ENV{PROGRAMW6432}/GLEW/lib
+		DOC "The GLEW library")
+
+   ELSE(CMAKE_CL_64)
+	FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
 		$ENV{PROGRAMFILES}/GLEW/include
-		${PROJECT_SOURCE_DIR}/src/nvgl/glew/include
 		DOC "The directory where GL/glew.h resides")
 	FIND_LIBRARY( GLEW_LIBRARY
 		NAMES glew GLEW glew32 glew32s
 		PATHS
 		$ENV{PROGRAMFILES}/GLEW/lib
-		${PROJECT_SOURCE_DIR}/src/nvgl/glew/bin
-		${PROJECT_SOURCE_DIR}/src/nvgl/glew/lib
 		DOC "The GLEW library")
-ELSE (WIN32)
-	FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h
+   ENDIF(CMAKE_CL_64)
+
+ELSE(MSVC)
+	FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
 		/usr/include
 		/usr/local/include
 		/sw/include
@@ -36,11 +48,11 @@ ELSE (WIN32)
 		/sw/lib
 		/opt/local/lib
 		DOC "The GLEW library")
-ENDIF (WIN32)
+ENDIF(MSVC)
 
-IF (GLEW_INCLUDE_PATH AND GLEW_LIBRARY)
+IF (GLEW_INCLUDE_DIR AND GLEW_LIBRARY)
         SET( GLEW_FOUND TRUE )
-ENDIF (GLEW_INCLUDE_PATH AND GLEW_LIBRARY)
+ENDIF (GLEW_INCLUDE_DIR AND GLEW_LIBRARY)
 
 IF (GLEW_FOUND)
    IF (NOT GLEW_FIND_QUIETLY)

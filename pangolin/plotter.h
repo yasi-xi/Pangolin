@@ -40,7 +40,7 @@ struct DataLog;
 
 Plotter& CreatePlotter(const std::string& name, DataLog* log = 0);
 
-struct DataUnavailableException : std::exception
+struct PANGOLIN_API DataUnavailableException : std::exception
 {
     DataUnavailableException(std::string str) : desc(str) {}
     DataUnavailableException(std::string str, std::string detail) {
@@ -51,7 +51,7 @@ struct DataUnavailableException : std::exception
     std::string desc;
 };
 
-struct DataSequence
+struct PANGOLIN_API DataSequence
 {
   DataSequence(unsigned int buffer_size = 1024, unsigned size = 0, float val = 0.0f );
 
@@ -74,7 +74,7 @@ inline bool DataSequence::HasData(int i) const {
     return i >= (int)firstn && i < (int)n;
 }
 
-struct DataLog
+struct PANGOLIN_API DataLog
 {
   DataLog(unsigned int buffer_size = 10000 );
   void Log(float v);
@@ -121,7 +121,7 @@ const static float colour_ax[3] = {0.5,0.5,0.5};
 const static int draw_modes_n = 2;
 const static int draw_modes[] = {GL_LINE_STRIP, GL_POINTS};
 
-struct Plotter : public View, Handler
+struct PANGOLIN_API Plotter : public View, Handler
 {
   Plotter(DataLog* log, float left=0, float right=600, float bottom=-1, float top=1, float tickx=30, float ticky=0.5 );
   void Render();
