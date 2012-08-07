@@ -92,10 +92,10 @@ typedef void (*GuiVarChangedCallbackFn)(void* data, const std::string& name, _Va
 PANGOLIN_API void RegisterGuiVarChangedCallback(GuiVarChangedCallbackFn callback, void* data, const std::string& filter = "");
 
 template<typename T> 
-PANGOLIN_API T FromFile( const std::string& filename, const T& init = T());
+T FromFile( const std::string& filename, const T& init = T());
 
 template<typename T> 
-PANGOLIN_API void FillFromFile( const std::string& filename, std::vector<T>& v, const T& init = T());
+void FillFromFile( const std::string& filename, std::vector<T>& v, const T& init = T());
 
 template<typename T> 
 struct SetVarFunctor
@@ -193,7 +193,7 @@ inline void Var<T>::operator=(const Var<T>& v)
 }
 
 
-struct NewVarCallback
+struct PANGOLIN_API NewVarCallback
 {
   NewVarCallback(const std::string& filter, NewVarCallbackFn fn, void* data)
     :filter(filter),fn(fn),data(data) {}
@@ -202,7 +202,7 @@ struct NewVarCallback
   void* data;
 };
 
-struct GuiVarChangedCallback
+struct PANGOLIN_API GuiVarChangedCallback
 {
   GuiVarChangedCallback(const std::string& filter, GuiVarChangedCallbackFn fn, void* data)
     :filter(filter),fn(fn),data(data) {}
@@ -227,7 +227,6 @@ inline void Var<T>::Init(const std::string& name,
 
   std::vector<std::string> parts;
   boost::split(parts,name,boost::is_any_of("."));
-
 
   if( vi != vars.end() )
   {

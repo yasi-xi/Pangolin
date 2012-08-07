@@ -147,14 +147,14 @@ void Panel::AddVariable(void* data, const std::string& name, _Var& var, const ch
   // already exist
   if( pnl == thisptr->context_views.end() )
   {
-    if( reg_type_name == typeid(bool).name() )
+    if( strcmp(reg_type_name, typeid(bool).name()) == 0 )
     {
       View* nv = var.meta_flags ? (View*)new Checkbox(title,var) : (View*)new Button(title,var);
       //thisptr->context_views[name] = nv;
       thisptr->context_views.insert(name,nv);
       thisptr->views.push_back(nv);
       thisptr->ResizeChildren();
-    }else if( reg_type_name == typeid(double).name() || reg_type_name == typeid(float).name() || reg_type_name == typeid(int).name() || reg_type_name == typeid(unsigned int).name() )
+    }else if( strcmp(reg_type_name, typeid(double).name()) == 0 || strcmp(reg_type_name, typeid(float).name()) == 0 || strcmp(reg_type_name, typeid(int).name()) == 0 || strcmp(reg_type_name, typeid(unsigned int).name()) == 0 )
     {
       View* nv = new Slider(title,var);
       //thisptr->context_views[name] = nv;

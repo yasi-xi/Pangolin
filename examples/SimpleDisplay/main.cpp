@@ -34,7 +34,7 @@ void GlobalKeyHook(const std::string& example)
 int main( int /*argc*/, char* argv[] )
 {  
   // Load configuration data
-  pangolin::ParseVarsFile("app.cfg");
+  //pangolin::ParseVarsFile("app.cfg");
 
   // Create OpenGL window in single line thanks to GLUT
   pangolin::CreateGlutWindowAndBind("Main",640,480);
