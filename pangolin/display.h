@@ -261,6 +261,8 @@ namespace pangolin
 		GLdouble m[16];
 	};
 
+	PANGOLIN_API OpenGlMatrix operator*(const OpenGlMatrix& lhs, const OpenGlMatrix& rhs);
+
 	//! @brief deprecated
 	struct PANGOLIN_API OpenGlMatrixSpec : public OpenGlMatrix {
 		// Specify which stack this refers to
