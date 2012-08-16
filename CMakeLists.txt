@@ -8,20 +8,19 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/"
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
 OPTION(BUILD_SHARED_LIBS "Build a shared Pangolin library" ON)
 
-# Set the LIB_TYPE variable to STATIC
-SET (LIB_TYPE STATIC)
-IF (BUILD_SHARED_LIBS)
-  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
-  SET (LIB_TYPE SHARED)
-ENDIF (BUILD_SHARED_LIBS)
-
-
 # Overide with cmake -DCMAKE_BUILD_TYPE=Debug {dir}
 IF( NOT CMAKE_BUILD_TYPE )
    MESSAGE("Build type not set (defaults to release)")
    MESSAGE("-DCMAKE_BUILD_TYPE=Debug for debug")
    SET( CMAKE_BUILD_TYPE Release )
 ENDIF()
+
+# Set the LIB_TYPE variable to STATIC
+SET (LIB_TYPE STATIC)
+IF (BUILD_SHARED_LIBS)
+  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
+  SET (LIB_TYPE SHARED)
+ENDIF (BUILD_SHARED_LIBS)
 
 # Platform configuration vars
 INCLUDE(SetPlatformVars)
