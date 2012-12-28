@@ -55,7 +55,7 @@
 using namespace std;
 using namespace boost;
 
-namespace pangolin
+namespace Pangolin
 {
 
 const VideoPixelFormat SupportedVideoPixelFormats[] =

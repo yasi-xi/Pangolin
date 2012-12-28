@@ -37,7 +37,7 @@
 #include "video/pvn_video.h"
 #include "threadedfilebuf.h"
 
-namespace pangolin
+namespace Pangolin
 {
 	struct PANGOLIN_API VideoRecorderException : std::exception
 	{

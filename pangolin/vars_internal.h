@@ -34,7 +34,7 @@
 #include <iostream>
 
 
-namespace pangolin
+namespace Pangolin
 {
 
 	struct BadInputException : std::exception {
@@ -45,11 +45,11 @@ namespace pangolin
 	template<typename T, typename S> struct Convert {
 		static T Do(const S& src)
 		{
-			std::ostringstream oss;
+            std::ostringstream oss;
 			oss << src;
-			std::istringstream iss(oss.str());
+            std::istringstream iss(oss.str());
 			T target;
-			iss >> target;
+            iss >> target;
 
 			if(iss.fail())
 				throw BadInputException();

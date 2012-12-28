@@ -38,7 +38,7 @@
 
 #include "platform.h"
 
-namespace pangolin
+namespace Pangolin
 {
 
 	class PANGOLIN_API threadedfilebuf : public std::streambuf

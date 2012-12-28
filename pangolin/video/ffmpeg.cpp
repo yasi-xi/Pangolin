@@ -27,7 +27,7 @@
 
 #include "ffmpeg.h"
 
-namespace pangolin
+namespace Pangolin
 {
 
 PixelFormat FfmpegFmtFromString(const std::string fmt)
@@ -145,7 +145,7 @@ void FfmpegVideo::InitUrl(const std::string url, const std::string strfmtout, co
 #else
     if( avformat_open_input(&pFormatCtx, url.c_str(), fmt, NULL) )
 #endif
-        throw VideoException("Couldn't open stream");
+        throw VideoException("Couldn't open stream: " + url);
 
     if( !boost::algorithm::to_lower_copy(codec_hint).compare("mjpeg") )
         pFormatCtx->max_analyze_duration = AV_TIME_BASE * 0.0;

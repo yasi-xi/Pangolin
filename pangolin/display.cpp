@@ -40,7 +40,7 @@
 
 using namespace std;
 
-namespace pangolin
+namespace Pangolin
 {
 
 	const int panal_v_margin = 6;
@@ -540,7 +540,7 @@ namespace pangolin
 	OpenGlMatrix operator*(const OpenGlMatrix& lhs, const OpenGlMatrix& rhs)
 	{
 		OpenGlMatrix ret;
-		pangolin::MatMul<4,4,4,double>(ret.m, lhs.m, rhs.m);
+        Pangolin::MatMul<4,4,4,double>(ret.m, lhs.m, rhs.m);
 		return ret;
 	}
 
@@ -927,8 +927,8 @@ namespace pangolin
 	{
 		if( button == button_state && (button == MouseWheelUp || button == MouseWheelDown) )
 		{
-			if( button == MouseWheelUp) d.scroll_offset   -= 1;
-			if( button == MouseWheelDown) d.scroll_offset += 1;
+            if( button == MouseWheelUp) d.scroll_offset   -= 1;
+            if( button == MouseWheelDown) d.scroll_offset += 1;
 			d.scroll_offset = max(0, min(d.scroll_offset, (int)d.views.size()) );
 			d.ResizeChildren();
 		}else{
@@ -966,12 +966,12 @@ namespace pangolin
 			{
 
 				LieSetIdentity(T_nc);
-				const double t[] = { 0,0,(button==MouseWheelUp?1:-1)*100*tf};
+                const double t[] = { 0,0,(button==MouseWheelUp?1:-1)*100*tf};
 				LieSetTranslation<>(T_nc,t);
 				if( !(button_state & MouseButtonRight) && !(rot_center[0]==0 && rot_center[1]==0 && rot_center[2]==0) )
 				{
 					LieSetTranslation<>(T_nc,rot_center);
-					MatMul<3,1>(T_nc+(3*3),(button==MouseWheelUp?-1.0:1.0)/5.0);
+                    MatMul<3,1>(T_nc+(3*3),(button==MouseWheelUp?-1.0:1.0)/5.0);
 				}
 				OpenGlMatrix& spec = cam_state->stacks[GlModelViewStack];
 				LieMul4x4bySE3<>(spec.m,T_nc,spec.m);

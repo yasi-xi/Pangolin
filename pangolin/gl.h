@@ -35,11 +35,16 @@
 #endif
 
 #include <GL/glew.h>
+
+#ifdef _OSX_
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 #include <math.h>
 
-namespace pangolin
+namespace Pangolin
 {
 
 ////////////////////////////////////////////////
@@ -72,6 +77,8 @@ public:
   void RenderToViewport(const bool flip) const;
   void RenderToViewport() const;
   void RenderToViewportFlipY() const;
+
+  void Render3DPlanTexture(float width, float height) const;
 
   GLint internal_format;
   GLuint tid;
@@ -106,9 +113,7 @@ struct PANGOLIN_API GlFramebuffer
 };
 
 PANGOLIN_API void glColorHSV( double hue, double s, double v );
-
 PANGOLIN_API void glColorBin( int bin, int max_bins, double sat = 1.0, double val = 1.0 );
-
 PANGOLIN_API void glPixelTransferScale( float r, float g, float b );
 PANGOLIN_API void glPixelTransferScale( float scale );
 
@@ -255,6 +260,19 @@ inline void GlTexture::RenderToViewportFlipY() const
   glTexCoord2f(0, 1); glVertex2d(-1,-1);
   glEnd();
   glDisable(GL_TEXTURE_2D);
+}
+
+inline void GlTexture::Render3DPlanTexture(float width, float height) const
+{
+    Bind();
+    glEnable(GL_TEXTURE_2D);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
+    glTexCoord2f(0.0, 1.0); glVertex3f(0.0, height, 0.0);
+    glTexCoord2f(1.0, 1.0); glVertex3f(width, height, 0.0);
+    glTexCoord2f(1.0, 0.0); glVertex3f(width, 0.0, 0.0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 inline GlRenderBuffer::GlRenderBuffer(GLint width, GLint height, GLint internal_format )

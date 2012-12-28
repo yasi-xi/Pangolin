@@ -32,7 +32,7 @@
 #include <Eigen/Eigen>
 #endif // HAVE_EIGEN
 
-namespace pangolin
+namespace Pangolin
 {
 
 // h [0,360)

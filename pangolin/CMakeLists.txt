@@ -8,7 +8,7 @@ SET(
   simple_math.h
   display.h display_internal.h display.cpp
   plotter.h plotter.cpp
-  gl.h glcuda.h cg.h glsl.h
+  gl.h gldraw.h glcuda.h cg.h glsl.h
   threadedfilebuf.h threadedfilebuf.cpp
   timer.h
 )
@@ -54,7 +54,7 @@ IF(MSVC)
    ENDIF(BUILD_SHARED_LIBS)
 ENDIF(MSVC)
 #FIND_PACKAGE(Boost COMPONENTS thread date_time REQUIRED)
-FIND_PACKAGE(Boost COMPONENTS thread date_time REQUIRED QUIET)
+FIND_PACKAGE(Boost COMPONENTS thread date_time system REQUIRED QUIET)
 
 ## Apply required dependencies settings
 LIST(APPEND LINK_LIBS "${OPENGL_LIBRARIES};${GLEW_LIBRARY};${Boost_LIBRARIES}" )
@@ -211,8 +211,8 @@ SET(INSTALL_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/config.h
 	vars.h 
 	vars_internal.h 
 	video.h 
-        video/firewire.h
-        widgets.h
+	video/firewire.h
+	widgets.h
 )
 
 # install headers
@@ -228,6 +228,6 @@ INSTALL(TARGETS ${LIBRARY_NAME}
 )
 
 # Export config file for easy inclusion into other projects: FIND_PACKAGE( Pangolin )
-CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/PangolinConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/PangolinConfig.cmake @ONLY IMMEDIATE )
-EXPORT( PACKAGE Pangolin )
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake @ONLY IMMEDIATE )
+EXPORT( PACKAGE ${PROJECT_NAME} )

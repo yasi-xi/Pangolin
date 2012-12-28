@@ -32,7 +32,7 @@
 #include "display.h"
 #include "vars.h"
 
-namespace pangolin
+namespace Pangolin
 {
 
 PANGOLIN_API bool GuiVarHasChanged();

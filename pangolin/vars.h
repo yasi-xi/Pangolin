@@ -40,7 +40,7 @@
 #include "vars_internal.h"
 #include "platform.h"
 
-namespace pangolin
+namespace Pangolin
 {
 
 ////////////////////////////////////////////////

@@ -39,7 +39,7 @@
 
 
 
-namespace pangolin
+namespace Pangolin
 {
 
 	std::string Dc1394ColorCodingToString(dc1394color_coding_t coding);

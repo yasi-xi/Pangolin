@@ -38,7 +38,7 @@
 #include <windows.h>
 #endif
 
-namespace pangolin
+namespace Pangolin
 {
 
 #ifdef _UNIX_

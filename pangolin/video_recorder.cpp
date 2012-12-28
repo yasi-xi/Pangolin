@@ -29,7 +29,7 @@
 
 using namespace std;
 
-namespace pangolin
+namespace Pangolin
 {
 
 	VideoRecorder::VideoRecorder(

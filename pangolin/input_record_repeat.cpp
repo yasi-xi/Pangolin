@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace pangolin
+namespace Pangolin
 {
 
 InputRecordRepeat::InputRecordRepeat(const std::string& var_record_prefix)

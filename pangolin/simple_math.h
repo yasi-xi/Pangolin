@@ -34,7 +34,7 @@
 #include <stdarg.h>
 #include <cmath>
 
-namespace pangolin
+namespace Pangolin
 {
 
 static const double Identity3d[] = {1,0,0, 0,1,0, 0,0,1};

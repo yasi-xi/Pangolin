@@ -13,7 +13,7 @@
   #include <cutil_inline.h>
 #endif // USE_CUTIL
 
-using namespace pangolin;
+using namespace Pangolin;
 using namespace std;
 
 // Mesh size
@@ -31,7 +31,7 @@ int main( int /*argc*/, char* argv[] )
     cudaGLSetGLDevice(0);
 #endif
 
-  pangolin::CreateGlutWindowAndBind("Main",640,480);
+  Pangolin::CreateGlutWindowAndBind("Main",640,480);
   glewInit();
 
   // Create vertex and colour buffer objects and register them with CUDA
@@ -45,20 +45,20 @@ int main( int /*argc*/, char* argv[] )
   );
 
   // Define Camera Render Object (for view / scene browsing)
-  pangolin::OpenGlRenderState s_cam(
+  Pangolin::OpenGlRenderState s_cam(
     ProjectionMatrix(640,480,420,420,320,240,0.1,1000),
     ModelViewLookAt(-0,2,-2, 0,0,0, AxisY)
   );
   const int UI_WIDTH = 180;
 
   // Add named OpenGL viewport to window and provide 3D Handler
-  View& d_cam = pangolin::Display("cam")
+  View& d_cam = Pangolin::Display("cam")
     .SetBounds(0.0, 1.0, Attach::Pix(UI_WIDTH), 1.0, -640.0f/480.0f)
     .SetHandler(new Handler3D(s_cam));
 
   // Add named Panel and bind to variables beginning 'ui'
   // A Panel is just a View with a default layout and input handling
-  View& d_panel = pangolin::CreatePanel("ui")
+  View& d_panel = Pangolin::CreatePanel("ui")
       .SetBounds(0.0, 1.0, 0.0, Attach::Pix(UI_WIDTH));
 
 #ifdef USE_CUTIL
@@ -69,7 +69,7 @@ int main( int /*argc*/, char* argv[] )
 #endif
 
   // Default hooks for exiting (Esc) and fullscreen (tab).
-  for(int frame=0; !pangolin::ShouldQuit(); ++frame)
+  for(int frame=0; !Pangolin::ShouldQuit(); ++frame)
   {
     static double time = 0;
     static Var<double> delta("ui.time delta", 0.001, 0, 0.005);
@@ -118,7 +118,7 @@ int main( int /*argc*/, char* argv[] )
     d_panel.Render();
 
     // Swap frames and Process Events
-    pangolin::FinishGlutFrame();
+    Pangolin::FinishGlutFrame();
 
 #ifdef USE_CUTIL
     cutStopTimer(timer);

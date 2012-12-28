@@ -35,7 +35,7 @@
 
 using namespace std;
 
-namespace pangolin
+namespace Pangolin
 {
 
 extern __thread PangolinGl* context;
@@ -50,7 +50,7 @@ const static float colour_bg[4] = {0.9, 0.9, 0.9, 1.0};
 const static float colour_fg[4] = {1.0, 1.0 ,1.0, 1.0};
 const static float colour_tx[4] = {0.0, 0.0, 0.0, 1.0};
 const static float colour_hl[4] = {0.9, 0.9, 0.9, 1.0};
-const static float colour_dn[4] = {1.0, 0.7 ,0.7, 1.0};
+const static float colour_dn[4] = {0, 0.77, 0.8, 0.6};
 static void* font = GLUT_BITMAP_HELVETICA_12;
 static int text_height = 8; //glutBitmapHeight(font) * 0.7;
 static int cb_height = text_height * 1.6;
@@ -61,7 +61,7 @@ static bool guiVarHasChanged = true;
 
 bool GuiVarHasChanged()
 {
-    return pangolin::Pushed(guiVarHasChanged);
+    return Pangolin::Pushed(guiVarHasChanged);
 }
 
 template<typename T>

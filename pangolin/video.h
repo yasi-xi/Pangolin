@@ -57,7 +57,7 @@
 // mjpeg - capture from (possibly networked) motion jpeg stream using FFMPEG
 //  e.g. "mjpeg://http://127.0.0.1/?action=stream"
 
-namespace pangolin
+namespace Pangolin
 {
     struct PANGOLIN_API VideoException : std::exception
     {

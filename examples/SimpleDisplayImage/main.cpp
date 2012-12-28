@@ -3,7 +3,7 @@
 #include <pangolin/pangolin.h>
 
 using namespace std;
-using namespace pangolin;
+using namespace Pangolin;
 
 void setImageData(float * imageArray, int width, int height){
   for(int i = 0 ; i < width*height;i++) {
@@ -16,7 +16,7 @@ int main( int /*argc*/, char* argv[] )
   // Create OpenGL window in single line thanks to GLUT
   CreateGlutWindowAndBind("Main",640,480);
 
-  pangolin::OpenGlRenderState s_cam(
+  Pangolin::OpenGlRenderState s_cam(
     ProjectionMatrix(640,480,420,420,320,240,0.1,1000),
     ModelViewLookAt(-0,0.5,-3, 0,0,0, AxisY)
   );
@@ -45,7 +45,7 @@ int main( int /*argc*/, char* argv[] )
   GlTexture imageTexture(width,height,GL_LUMINANCE32F_ARB);
 
   // Default hooks for exiting (Esc) and fullscreen (tab).
-  while(!pangolin::ShouldQuit())
+  while(!Pangolin::ShouldQuit())
   {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -62,7 +62,7 @@ int main( int /*argc*/, char* argv[] )
     d_image.Activate();
     imageTexture.RenderToViewport();
 
-    pangolin::FinishGlutFrame();
+    Pangolin::FinishGlutFrame();
   }
 
   delete imageArray;

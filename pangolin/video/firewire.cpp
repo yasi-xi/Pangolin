@@ -34,7 +34,7 @@
 
 using namespace std;
 
-namespace pangolin
+namespace Pangolin
 {
 
 	void FirewireVideo::init_camera(

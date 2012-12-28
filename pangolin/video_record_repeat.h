@@ -33,7 +33,7 @@
 #include "video.h"
 #include "video_recorder.h"
 
-namespace pangolin
+namespace Pangolin
 {
 
 struct PANGOLIN_API VideoRecordRepeat : public VideoInterface

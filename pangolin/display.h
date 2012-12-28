@@ -75,7 +75,7 @@ inline void glutBitmapString(void* font, const unsigned char* str)
 #define GLUT_KEY_ESCAPE 27
 #define GLUT_KEY_TAB 9
 
-namespace pangolin
+namespace Pangolin
 {
 
 	//! @brief Give this OpenGL context a name or switch contexts
@@ -524,7 +524,7 @@ namespace pangolin
 }
 
 // Inline definitions
-namespace pangolin
+namespace Pangolin
 {
 
 	inline Viewport::Viewport(GLint l,GLint b,GLint w,GLint h) : l(l),b(b),w(w),h(h) {}

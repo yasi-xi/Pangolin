@@ -28,13 +28,14 @@
 #ifndef PANGOLIN_CUDAGL_H
 #define PANGOLIN_CUDAGL_H
 
+#include "gl.h"
+
 #include <algorithm>
+#include <cutil.h>
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 
-#include "gl.h"
-
-namespace pangolin
+namespace Pangolin
 {
 
 ////////////////////////////////////////////////
@@ -138,10 +139,7 @@ inline GlTextureCudaArray::GlTextureCudaArray(int width, int height, GLint inter
   :GlTexture(width,height,internal_format, sampling_linear)
 {
   // TODO: specify flags too
-  const cudaError_t err = cudaGraphicsGLRegisterImage(&cuda_res, tid, GL_TEXTURE_2D, cudaGraphicsMapFlagsNone);
-  if( err != cudaSuccess ) {
-      std::cout << "cudaGraphicsGLRegisterImage failed: " << err << std::endl;
-  }
+    CUDA_SAFE_CALL(cudaGraphicsGLRegisterImage(&cuda_res, tid, GL_TEXTURE_2D, cudaGraphicsMapFlagsNone));
 }
 
 inline GlTextureCudaArray::~GlTextureCudaArray()

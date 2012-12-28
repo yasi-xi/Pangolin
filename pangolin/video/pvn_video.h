@@ -33,7 +33,7 @@
 #include <pangolin/timer.h>
 #include "fstream"
 
-namespace pangolin
+namespace Pangolin
 {
 
 	struct PANGOLIN_API VideoStream
@@ -67,8 +67,8 @@ namespace pangolin
 
 
 		bool realtime;
-		pangolin::basetime frame_interval;
-		pangolin::basetime last_frame;
+		Pangolin::basetime frame_interval;
+		Pangolin::basetime last_frame;
 
 		void ReadFileHeader();
 	};

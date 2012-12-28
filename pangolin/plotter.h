@@ -32,7 +32,7 @@
 #include <vector>
 #include <boost/circular_buffer.hpp>
 
-namespace pangolin
+namespace Pangolin
 {
 
 struct Plotter;
@@ -158,6 +158,6 @@ struct PANGOLIN_API Plotter : public View, Handler
   bool show[show_n];
 };
 
-} // namespace pangolin
+} // namespace Pangolin
 
 #endif // PLOTTER_H
