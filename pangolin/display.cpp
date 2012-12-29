@@ -937,6 +937,38 @@ namespace Pangolin
 
 	}
 
+    void Handler2D::Keyboard(View&, unsigned char key, int x, int y, bool pressed)
+    {
+        // TODO: some shortcut for 2D handler
+    }
+
+    void Handler2D::Mouse(View& display, MouseButton button, int x, int y, bool pressed, int button_state)
+    {
+
+        if(x > display.vp.l && x < display.vp.r() && y > display.vp.b && y < display.vp.t())
+            in_view = true;
+        else
+            in_view = false;
+
+        this->button = (MouseButton)(1 << button);
+        this->pressed = pressed;
+
+        last_pos[0] = x;
+        last_pos[1] = y;
+    }
+
+    void Handler2D::MouseMotion(View& display, int x, int y, int button_state)
+    {
+
+        if(x > display.vp.l && x < display.vp.r() && y > display.vp.b && y < display.vp.t())
+            in_view = true;
+        else
+            in_view = false;
+
+        last_pos[0] = x;
+        last_pos[1] = y;
+    }
+
 	void Handler3D::Keyboard(View&, unsigned char key, int x, int y, bool pressed)
 	{
 		// TODO: hooks for reset / changing mode (perspective / ortho etc)

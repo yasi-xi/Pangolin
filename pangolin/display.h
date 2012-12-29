@@ -459,15 +459,36 @@ namespace Pangolin
 		AxisNegZ, AxisZ
 	};
 
+    struct PANGOLIN_API Handler2D : Handler
+    {
+
+        Handler2D(){}
+
+        void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
+        void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
+        void MouseMotion(View&, int x, int y, int button_state);
+
+        bool IsInsideView() const { return in_view; }
+        bool IsPressed() const { return pressed; }
+        GLint const* GetLastPos() const { return last_pos; }
+
+    protected:
+        MouseButton button;
+        bool pressed;
+        bool in_view;
+        GLint last_pos[2];
+    };
+
 	struct PANGOLIN_API Handler3D : Handler
 	{
 
 		Handler3D(OpenGlRenderState& cam_state, AxisDirection enforce_up=AxisNone, float trans_scale=0.01f)
 			: cam_state(&cam_state), enforce_up(enforce_up), tf(trans_scale), cameraspec(CameraSpecOpenGl), last_z(1.0) {}
 
-		void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
-		void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
-		void MouseMotion(View&, int x, int y, int button_state);
+        void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
+        void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
+        void MouseMotion(View&, int x, int y, int button_state);
+
 
 	protected:
 		OpenGlRenderState* cam_state;
