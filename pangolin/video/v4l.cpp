@@ -48,7 +48,7 @@
 
 using namespace std;
 
-namespace pangolin
+namespace Pangolin
 {
 
 	static int xioctl(int fd, int request, void* arg)
