@@ -2,7 +2,7 @@
 #include <boost/thread.hpp>
 #include <pangolin/pangolin.h>
 
-using namespace Pangolin;
+using namespace pangolin;
 using namespace std;
 
 #include <pangolin/display_internal.h>
@@ -10,7 +10,7 @@ using namespace std;
 int main( int /*argc*/, char* argv[] )
 {
   // Create OpenGL window in single line thanks to GLUT
-  Pangolin::CreateGlutWindowAndBind("Main",640,480);
+  pangolin::CreateGlutWindowAndBind("Main",640,480);
 
   // Issue specific OpenGl we might need, in this case for smooth lines
   glEnable (GL_BLEND);
@@ -37,7 +37,7 @@ int main( int /*argc*/, char* argv[] )
   const double tinc = 0.01;
 
   // Default hooks for exiting (Esc) and fullscreen (tab).
-  while( !Pangolin::ShouldQuit() )
+  while( !pangolin::ShouldQuit() )
   {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -45,7 +45,7 @@ int main( int /*argc*/, char* argv[] )
     t += tinc;
 
     // Render graph, Swap frames and Process Events
-    Pangolin::FinishGlutFrame();
+    pangolin::FinishGlutFrame();
 
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
   }

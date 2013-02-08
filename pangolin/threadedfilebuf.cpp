@@ -31,7 +31,7 @@
 
 using namespace std;
 
-namespace Pangolin
+namespace pangolin
 {
 
 	threadedfilebuf::threadedfilebuf( const std::string& filename, unsigned int buffer_size_bytes )

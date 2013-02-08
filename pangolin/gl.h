@@ -44,7 +44,7 @@
 
 #include <math.h>
 
-namespace Pangolin
+namespace pangolin
 {
 
 ////////////////////////////////////////////////

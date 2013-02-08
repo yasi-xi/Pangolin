@@ -31,7 +31,7 @@
 
 using namespace std;
 
-namespace Pangolin
+namespace pangolin
 {
 
 	PvnVideo::PvnVideo(const char* filename, bool realtime )

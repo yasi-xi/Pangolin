@@ -36,7 +36,7 @@
 using namespace std;
 using namespace boost;
 
-namespace Pangolin
+namespace pangolin
 {
 
     boost::ptr_unordered_map<string,_Var> vars;

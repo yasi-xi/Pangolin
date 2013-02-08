@@ -2,7 +2,7 @@
 #include <pangolin/video/pvn_video.h>
 #include <pangolin/widgets.h>
 
-namespace Pangolin
+namespace pangolin
 {
 
 	VideoRecordRepeat::VideoRecordRepeat(

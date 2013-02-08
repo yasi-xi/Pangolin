@@ -41,7 +41,7 @@
 #include <TooN/TooN.h>
 #endif // HAVE_TOON
 
-namespace Pangolin
+namespace pangolin
 {
 
 ////////////////////////////////////////////////

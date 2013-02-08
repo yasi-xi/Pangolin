@@ -45,7 +45,7 @@ extern "C"
 #include <libavutil/pixdesc.h>
 }
 
-namespace Pangolin
+namespace pangolin
 {
 
 class FfmpegVideo : public VideoInterface

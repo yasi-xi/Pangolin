@@ -7,7 +7,7 @@
 #include <pangolin/pangolin.h>
 #include <pangolin/video.h>
 
-using namespace Pangolin;
+using namespace pangolin;
 using namespace std;
 
 void VideoSample(const std::string uri)
@@ -19,7 +19,7 @@ void VideoSample(const std::string uri)
     const unsigned h = video.Height();
 
     // Create Glut window
-    Pangolin::CreateGlutWindowAndBind("Main",w,h);
+    pangolin::CreateGlutWindowAndBind("Main",w,h);
 
     // Create viewport for video with fixed aspect
     View& vVideo = Display("Video").SetAspect((float)w/h);
@@ -29,7 +29,7 @@ void VideoSample(const std::string uri)
 
     unsigned char* img = new unsigned char[video.SizeBytes()];
 
-    for(int frame=0; !Pangolin::ShouldQuit(); ++frame)
+    for(int frame=0; !pangolin::ShouldQuit(); ++frame)
     {
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -41,7 +41,7 @@ void VideoSample(const std::string uri)
         texVideo.RenderToViewportFlipY();
 
         // Swap back buffer with front and process window events via GLUT
-        Pangolin::FinishGlutFrame();
+        pangolin::FinishGlutFrame();
     }
 
     delete[] img;

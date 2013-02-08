@@ -34,7 +34,7 @@
 #include <iostream>
 
 
-namespace Pangolin
+namespace pangolin
 {
 
 	struct BadInputException : std::exception {

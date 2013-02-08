@@ -4,7 +4,7 @@
 
 #include <pangolin/simple_math.h>
 
-using namespace Pangolin;
+using namespace pangolin;
 using namespace std;
 
 struct CustomType
@@ -34,10 +34,10 @@ void GlobalKeyHook(const std::string& example)
 int main( int /*argc*/, char* argv[] )
 {  
   // Load configuration data
-  Pangolin::ParseVarsFile("app.cfg");
+  pangolin::ParseVarsFile("app.cfg");
 
   // Create OpenGL window in single line thanks to GLUT
-  Pangolin::CreateGlutWindowAndBind("Main",640,480);
+  pangolin::CreateGlutWindowAndBind("Main",640,480);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Issue specific OpenGl we might need
@@ -45,7 +45,7 @@ int main( int /*argc*/, char* argv[] )
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Define Camera Render Object (for view / scene browsing)
-  Pangolin::OpenGlRenderState s_cam(
+  pangolin::OpenGlRenderState s_cam(
     ProjectionMatrix(640,480,420,420,320,240,0.1,1000),
     ModelViewLookAt(-0,0.5,-3, 0,0,0, AxisY)
   );
@@ -53,20 +53,20 @@ int main( int /*argc*/, char* argv[] )
   const int UI_WIDTH = 180;
 
   // Add named OpenGL viewport to window and provide 3D Handler
-  View& d_cam = Pangolin::CreateDisplay()
+  View& d_cam = pangolin::CreateDisplay()
     .SetBounds(0.0, 1.0, Attach::Pix(UI_WIDTH), 1.0, -640.0f/480.0f)
     .SetHandler(new Handler3D(s_cam));
 
   // Add named Panel and bind to variables beginning 'ui'
   // A Panel is just a View with a default layout and input handling
-  View& d_panel = Pangolin::CreatePanel("ui")
+  View& d_panel = pangolin::CreatePanel("ui")
       .SetBounds(0.0, 1.0, 0.0, Attach::Pix(UI_WIDTH));
 
   // Demonstration of how we can register a keyboard hook to alter a Var
-//  Pangolin::RegisterKeyPressCallback( 'b', SetVarFunctor<double>("ui.A Double", 3.5) );
+//  pangolin::RegisterKeyPressCallback( 'b', SetVarFunctor<double>("ui.A Double", 3.5) );
 
   // Demonstration of how we can register a keyboard hook to trigger a method
-  Pangolin::RegisterKeyPressCallback( PANGO_CTRL + 'r', boost::bind(GlobalKeyHook, "You Pushed ctrl-r!" ) );
+  pangolin::RegisterKeyPressCallback( PANGO_CTRL + 'r', boost::bind(GlobalKeyHook, "You Pushed ctrl-r!" ) );
 
   // Safe and efficient binding of named variables.
   // Specialisations mean no conversions take place for exact types
@@ -82,9 +82,9 @@ int main( int /*argc*/, char* argv[] )
 	Var<CustomType> any_type("ui.Some Type", custom);
 
   // Default hooks for exiting (Esc) and fullscreen (tab).
-  while( !Pangolin::ShouldQuit() )
+  while( !pangolin::ShouldQuit() )
   {
-    if(Pangolin::HasResized())
+    if(pangolin::HasResized())
       DisplayBase().ActivateScissorAndClear();
 
     if( Pushed(a_button) )
@@ -118,7 +118,7 @@ int main( int /*argc*/, char* argv[] )
       d_panel.Render();
 
     // Swap frames and Process Events
-    Pangolin::FinishGlutFrame();
+    pangolin::FinishGlutFrame();
   }
 
   return 0;

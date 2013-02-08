@@ -36,7 +36,7 @@
 
 using namespace std;
 
-namespace Pangolin
+namespace pangolin
 {
 
 extern __thread PangolinGl* context;
@@ -558,4 +558,4 @@ Plotter& CreatePlotter(const string& name, DataLog* log)
   return *v;
 }
 
-} // namespace Pangolin
+} // namespace pangolin

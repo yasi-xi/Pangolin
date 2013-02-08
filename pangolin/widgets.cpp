@@ -35,7 +35,7 @@
 
 using namespace std;
 
-namespace Pangolin
+namespace pangolin
 {
 
 extern __thread PangolinGl* context;
@@ -61,7 +61,7 @@ static bool guiVarHasChanged = true;
 
 bool GuiVarHasChanged()
 {
-    return Pangolin::Pushed(guiVarHasChanged);
+    return pangolin::Pushed(guiVarHasChanged);
 }
 
 template<typename T>

@@ -40,7 +40,7 @@
 
 using namespace std;
 
-namespace Pangolin
+namespace pangolin
 {
 
 	const int panal_v_margin = 6;
@@ -540,7 +540,7 @@ namespace Pangolin
 	OpenGlMatrix operator*(const OpenGlMatrix& lhs, const OpenGlMatrix& rhs)
 	{
 		OpenGlMatrix ret;
-        Pangolin::MatMul<4,4,4,double>(ret.m, lhs.m, rhs.m);
+        pangolin::MatMul<4,4,4,double>(ret.m, lhs.m, rhs.m);
 		return ret;
 	}
 

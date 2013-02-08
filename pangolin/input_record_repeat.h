@@ -32,7 +32,7 @@
 
 #include <list>
 
-namespace Pangolin
+namespace pangolin
 {
 
 struct PANGOLIN_API FrameInput

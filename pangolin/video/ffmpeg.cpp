@@ -27,7 +27,7 @@
 
 #include "ffmpeg.h"
 
-namespace Pangolin
+namespace pangolin
 {
 
 PixelFormat FfmpegFmtFromString(const std::string fmt)

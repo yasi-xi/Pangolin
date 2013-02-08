@@ -9,7 +9,7 @@
 #include <pangolin/video_record_repeat.h>
 #include <pangolin/input_record_repeat.h>
 
-using namespace Pangolin;
+using namespace pangolin;
 using namespace std;
 
 void RecordSample(const std::string uri, const std::string vid_file, const std::string ui_file)
@@ -25,10 +25,10 @@ void RecordSample(const std::string uri, const std::string vid_file, const std::
 
     // Create Glut window
     const int panel_width = 200;
-    Pangolin::CreateGlutWindowAndBind("Main",w + panel_width,h);
+    pangolin::CreateGlutWindowAndBind("Main",w + panel_width,h);
 
     // Create viewport for video with fixed aspect
-    View& d_panel = Pangolin::CreatePanel("ui.")
+    View& d_panel = pangolin::CreatePanel("ui.")
         .SetBounds(0.0, 1.0, 0.0, Attach::Pix(panel_width));
 
     View& vVideo = Display("Video")
@@ -48,7 +48,7 @@ void RecordSample(const std::string uri, const std::string vid_file, const std::
     static Var<float> hue("ui.Hue",0,0,360);
     static Var<bool> colour("ui.Colour Video",false,true);
 
-    while( !Pangolin::ShouldQuit() )
+    while( !pangolin::ShouldQuit() )
     {
         // Load next video frame
         video.GrabNext(img,true);
@@ -67,25 +67,25 @@ void RecordSample(const std::string uri, const std::string vid_file, const std::
         }
         texVideo.RenderToViewportFlipY();
 
-        if(Pangolin::Pushed(record)) {
+        if(pangolin::Pushed(record)) {
             video.Record();
             input.Record();
         }
 
-        if(Pangolin::Pushed(play)) {
+        if(pangolin::Pushed(play)) {
             video.Play(realtime);
             input.PlayBuffer(0,input.Size()-1);
             input.SaveBuffer(ui_file);
         }
 
-        if(Pangolin::Pushed(source)) {
+        if(pangolin::Pushed(source)) {
             video.Source();
             input.Stop();
             input.SaveBuffer(ui_file);
         }
 
         d_panel.Render();
-        Pangolin::FinishGlutFrame();
+        pangolin::FinishGlutFrame();
     }
 
     delete[] img;

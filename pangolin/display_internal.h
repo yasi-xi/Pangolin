@@ -36,7 +36,7 @@
 #include <GLConsole/GLConsole.h>
 #endif // HAVE_CVARS
 
-namespace Pangolin
+namespace pangolin
 {
 
   struct PangolinGl

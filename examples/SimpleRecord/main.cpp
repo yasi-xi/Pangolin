@@ -8,7 +8,7 @@
 #include <pangolin/video.h>
 #include <pangolin/video_recorder.h>
 
-using namespace Pangolin;
+using namespace pangolin;
 using namespace std;
 
 void RecordSample(const std::string uri, const std::string filename)
@@ -23,7 +23,7 @@ void RecordSample(const std::string uri, const std::string filename)
     VideoRecorder recorder(filename, w, h, vid_fmt.format, video.SizeBytes()*50 );
 
     // Create Glut window
-    Pangolin::CreateGlutWindowAndBind("Main",w,h);
+    pangolin::CreateGlutWindowAndBind("Main",w,h);
 
     // Create viewport for video with fixed aspect
     View& vVideo = Display("Video").SetAspect((float)w/h);
@@ -33,7 +33,7 @@ void RecordSample(const std::string uri, const std::string filename)
 
     unsigned char* img = new unsigned char[video.SizeBytes()];
 
-    while( !Pangolin::ShouldQuit() )
+    while( !pangolin::ShouldQuit() )
     {
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -51,7 +51,7 @@ void RecordSample(const std::string uri, const std::string filename)
         texVideo.RenderToViewportFlipY();
 
         // Swap back buffer with front and process window events via GLUT
-        Pangolin::FinishGlutFrame();
+        pangolin::FinishGlutFrame();
     }
 
     delete[] img;

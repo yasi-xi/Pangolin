@@ -37,7 +37,7 @@
 #include <Eigen/Eigen>
 #endif // HAVE_EIGEN
 
-namespace Pangolin
+namespace pangolin
 {
 
 ////////////////////////////////////////////////
