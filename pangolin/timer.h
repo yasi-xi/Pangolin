@@ -75,7 +75,7 @@ inline basetime TimeAdd(basetime t1, basetime t2)
 
 inline double TimeDiffInMicroSec(basetime start, basetime end)
 {
-    return (double)(end.tv_sec - start.tv_sec) + (double)(end.tv_usec - start.tv_usec) * 1E-6;
+    return (double)(end.tv_sec - start.tv_sec)*1E6 + (double)(end.tv_usec - start.tv_usec);
 }
 #endif
 
@@ -124,7 +124,8 @@ inline basetime WaitUntil(basetime t)
 
 struct PANGOLIN_API Timer
 {
-	Timer() {
+    Timer()
+    {
 		Reset();
 	}
 
@@ -148,7 +149,7 @@ struct PANGOLIN_API Timer
 	double getElapsedTimeInSec()
 	{
 		basetime currtime = TimeNow();
-		return 0.000001 * TimeDiffInMicroSec(start, currtime);
+        return 1E-6 * TimeDiffInMicroSec(start, currtime);
 	}
 
 
