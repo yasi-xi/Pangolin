@@ -9,10 +9,6 @@
 #include <cuda_gl_interop.h>
 #include <vector_types.h>
 
-#ifdef USE_CUTIL
-  #include <cutil_inline.h>
-#endif // USE_CUTIL
-
 using namespace pangolin;
 using namespace std;
 
