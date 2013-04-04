@@ -497,7 +497,7 @@ namespace pangolin
 		float tf;
 		CameraSpec cameraspec;
 		GLfloat last_z;
-		GLint last_pos[2];
+        GLint last_pos[2];
 		GLdouble rot_center[3];
 	};
 

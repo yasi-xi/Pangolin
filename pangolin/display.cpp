@@ -975,7 +975,7 @@ namespace pangolin
 	}
 
 	void Handler3D::Mouse(View& display, MouseButton button, int x, int y, bool pressed, int button_state)
-	{
+    {
 		// mouse down
 		last_pos[0] = x;
 		last_pos[1] = y;
@@ -1020,7 +1020,7 @@ namespace pangolin
 	};
 
 	void Handler3D::MouseMotion(View& display, int x, int y, int button_state)
-	{
+    {
 		const int delta[2] = {(x-last_pos[0]),(y-last_pos[1])};
 		const float mag = delta[0]*delta[0] + delta[1]*delta[1];
 

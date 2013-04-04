@@ -31,9 +31,11 @@
 #include "gl.h"
 
 #include <algorithm>
-#include <cutil.h>
+
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
+
+#include <helper_cuda.h>
 
 namespace pangolin
 {
@@ -139,7 +141,7 @@ inline GlTextureCudaArray::GlTextureCudaArray(int width, int height, GLint inter
   :GlTexture(width,height,internal_format, sampling_linear)
 {
   // TODO: specify flags too
-    CUDA_SAFE_CALL(cudaGraphicsGLRegisterImage(&cuda_res, tid, GL_TEXTURE_2D, cudaGraphicsMapFlagsNone));
+    checkCudaErrors(cudaGraphicsGLRegisterImage(&cuda_res, tid, GL_TEXTURE_2D, cudaGraphicsMapFlagsNone));
 }
 
 inline GlTextureCudaArray::~GlTextureCudaArray()
