@@ -462,7 +462,7 @@ namespace pangolin
     struct PANGOLIN_API Handler2D : Handler
     {
 
-        Handler2D(){}
+        Handler2D():in_view(false), pressed(false){};
 
         void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
         void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
